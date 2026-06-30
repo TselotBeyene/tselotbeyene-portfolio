@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import HeroLeft from "./HeroLeft";
 import HeroRight from "./HeroRight";
 import IntroSection from "./IntroSection";
-import portrait from "../assets/tselot_b.png";
+import HeroPortrait from "./HeroPortrait";
 
 function clamp(value, min = 0, max = 1) {
   return Math.min(Math.max(value, min), max);
@@ -13,7 +13,7 @@ function mapRange(value, inMin, inMax, outMin, outMax) {
   return outMin + (outMax - outMin) * t;
 }
 
-function ScrollScene() {
+function ScrollScene({ heroHidden = false }) {
   const sceneRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
@@ -45,7 +45,7 @@ function ScrollScene() {
     const heroY = mapRange(progress, 0.12, 0.38, 0, -120);
 
     const imageScale = mapRange(progress, 0, 0.82, 1, 2.5);
-    const imageX = -400;
+    const imageX = 0;
     const imageY = -280;
 
     const introOpacity = mapRange(progress, 0.28, 0.46, 0, 1);
@@ -74,20 +74,16 @@ function ScrollScene() {
       <div className="sticky top-0 h-screen overflow-hidden bg-[#070707]">
         <div className="absolute inset-0 z-0 bg-[#070707]" />
 
-        <div className="absolute inset-0 z-[1] overflow-hidden">
-          <div
-            className="absolute left-[50%] top-[50%] h-[100vh] w-[32vw] min-w-[360px] max-w-[520px] overflow-hidden"
-            style={{
-              transform: `translate(-50%, -50%) translate(${styles.imageX}px, ${styles.imageY}px) scale(${styles.imageScale})`,
-              transformOrigin: "center center",
-            }}
-          >
-            <img
-              src={portrait}
-              alt="Portrait"
-              className="h-full w-full object-cover object-center select-none pointer-events-none"
-            />
-          </div>
+        <div
+          className="absolute inset-0 z-[1] overflow-hidden"
+          style={{ opacity: heroHidden ? 0 : 1 }}
+        >
+          <HeroPortrait
+            imageX={styles.imageX}
+            imageY={styles.imageY}
+            imageScale={styles.imageScale}
+            imgId="hero-portrait"
+          />
         </div>
 
         <div className="absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(5,5,5,0.95)_0%,rgba(5,5,5,0.72)_16%,rgba(5,5,5,0.10)_44%,rgba(5,5,5,0.20)_60%,rgba(5,5,5,0.58)_78%,rgba(5,5,5,0.92)_100%)]" />

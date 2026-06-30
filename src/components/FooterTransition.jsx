@@ -1,58 +1,86 @@
-import {useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import subjectImg from "../assets/Subject.png";
 import secondImg from "../assets/tselot_b.png";
 
-export default function FooterTransition({ isLooping, setIsLooping }) {
-  
+const lerp = (a, b, t) => a + (b - a) * t;
+
+export default function FooterTransition({ onLoopHandoff, handoffActive }) {
   const [progress, setProgress] = useState(0);
+  const targetRef = useRef(0);
+  const currentRef = useRef(0);
+  const rafRef = useRef(null);
+  const handoffTriggeredRef = useRef(false);
+
+  const resetFooter = () => {
+    targetRef.current = 0;
+    currentRef.current = 0;
+    handoffTriggeredRef.current = false;
+    setProgress(0);
+  };
+
   useEffect(() => {
-    if (isLooping) {
-      window.scrollTo(0, 0);
-  
-      const timer = setTimeout(() => {
-        setProgress(0);
-        setIsLooping(false);
-      }, 50);
-  
-      return () => clearTimeout(timer);
-    }
-  }, [isLooping, setIsLooping]);
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
-const handleWheel = (e) => {
-  e.preventDefault();
+  const runLoop = () => {
+    if (rafRef.current != null) return;
 
-  setProgress((prev) => {
-    const next = prev + e.deltaY * 0.0003;
+    const tick = () => {
+      const next = lerp(currentRef.current, targetRef.current, 0.2);
+      currentRef.current = next;
+      setProgress(next);
 
-    if (next >= 3) {
-      setIsLooping(true);
-    }
+      // once the eased motion has settled near the end, hand off to the hero
+      if (next >= 2.97 && onLoopHandoff && !handoffTriggeredRef.current) {
+        handoffTriggeredRef.current = true;
+        rafRef.current = null;
+        onLoopHandoff(resetFooter);
+        return;
+      }
 
-    return Math.min(3, Math.max(0, next));
-  });
-};
+      if (Math.abs(targetRef.current - next) > 0.0005) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        currentRef.current = targetRef.current;
+        setProgress(targetRef.current);
+        rafRef.current = null;
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
+  const handleWheel = (e) => {
+    e.preventDefault();
+    targetRef.current = Math.min(3, Math.max(0, targetRef.current + e.deltaY * 0.0006));
+    runLoop();
+  };
   // progress split
   const introProgress = Math.min(progress, 1);
-  const imageProgress = Math.max(0, progress - 1);
+
+  // the background finishes sliding down to black around progress 0.45
+  const blackPoint = 0.45;
+  const imageProgress = Math.max(0, progress - blackPoint);
 
   // orange becomes black during intro
   const orangeText = progress > 7.8 ? "#ea580c" : "#000000";
 
-  // FIRST IMAGE
-  const scale = 0.7 + imageProgress * 1.5;
-  const x = imageProgress * 1100;
-  const blur =
-    imageProgress > 1.2 ? (imageProgress - 1.2) * 10 : 0;
+  // FIRST IMAGE (subject exits to the right once the background is black)
+  const scale = 0.7 + imageProgress * 1.2;
+  const x = imageProgress * 900;
+  const blur = imageProgress > 1.0 ? (imageProgress - 1.0) * 10 : 0;
 
-  // SECOND IMAGE
-  const secondProgress = Math.min(
-    1,
-    Math.max(0, (imageProgress - 0.1) / 1)
-  );
+  // SECOND IMAGE (portrait) — starts right after black and keeps rising across
+  // the whole remaining scroll so it is still moving when the handoff fires.
+  const secondT = Math.min(1, imageProgress / 2.45);
+  const secondEase = secondT * secondT * (3 - 2 * secondT);
 
-  const secondScale = 0.3 + secondProgress * 1.9;
-  const secondOpacity = secondProgress;
-  const secondY = 100 - secondProgress * 300;
+  const secondOpacity = Math.min(1, imageProgress / 0.18);
+  const secondScale = 0.6 + secondEase * 1.05;
+  const secondY = 200 - secondEase * 440;
+  const secondX = 0;
 
   return (
     <section
@@ -112,11 +140,11 @@ const handleWheel = (e) => {
           <div className="w-max whitespace-nowrap animate-[footerMarquee_18s_linear_infinite] text-[8rem] font-medium leading-none tracking-[-0.08em] text-black/95 md:text-[10rem] lg:text-[12rem]">
             <span className="mr-10">hello</span>
             <span style={{ color: orangeText }} className="mr-10">@</span>
-            <span className="mr-16">tselotbeyene</span>
+            <span className="mr-16">tselotbeyene.com</span>
 
             <span className="mr-10">hello</span>
             <span style={{ color: orangeText }} className="mr-10">@</span>
-            <span className="mr-16">tselotbeyene</span>
+            <span className="mr-16">tselotbeyene.com</span>
           </div>
         </div>
 
@@ -133,13 +161,14 @@ const handleWheel = (e) => {
 
         {/* SECOND IMAGE */}
         <img
+          id="footer-portrait"
           src={secondImg}
           alt="Second"
           style={{
-            transform: `translateY(${secondY}px) scale(${secondScale})`,
-            opacity: secondOpacity,
+            transform: `translate(calc(-50% + ${secondX}px), ${secondY}px) scale(${secondScale})`,
+            opacity: handoffActive ? 0 : secondOpacity,
           }}
-          className="pointer-events-none absolute bottom-[25vh] left-[35%] z-20 h-[60vh] -translate-x-1/2 origin-center transition-all duration-300 ease-out"
+          className="pointer-events-none absolute bottom-[25vh] left-1/2 z-20 h-[60vh] origin-center transition-all duration-300 ease-out"
         />
       </div>
     </section>

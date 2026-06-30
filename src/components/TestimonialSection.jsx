@@ -11,12 +11,12 @@ const testimonials = [
     role: "Motion & Interaction Designer - Specialising in the UI/UX industry",
     image: avatar1,
     preview:
-      "As a motion designer on his team, I've received tremendous support and inspiration from Valentin. ...",
+      "As a motion designer on her team, I've received tremendous support and inspiration from Tselot. ...",
     full: [
-      "As a motion designer on his team, I've received tremendous support and inspiration from Valentin.",
-      "On any given day, if there was a UI sketch on a piece of paper, it belonged to Valentin. His deep knowledge of design is evident, and his work never fails to impress me. I've always been curious about what makes his work so distinct and beautiful. In my eyes, he is the finest designer on the team, known for his high-quality work (and his suits, of course).",
-      "Despite his reserved nature, he's an excellent mentor with a kind heart. He's open about his failures and never brags about his successes. He always listens attentively and offers advice on not just my professional skills but also on interpersonal ones. His sense of humor keeps our conversations incredibly engaging. We've remained friends to this day.",
-      "Having Valentin on your team guarantees that it will be distinguished by great suits, a notable beard, and exceptional design work (some sense of humor too).",
+      "As a motion designer on her team, I've received tremendous support and inspiration from Tselot.",
+      "On any given day, if there was a UI sketch on a piece of paper, it belonged to Tselot. Her deep knowledge of design is evident, and her work never fails to impress me. I've always been curious about what makes her work so distinct and beautiful. In my eyes, she is one of the finest designers on the team, known for her high-quality work.",
+      "Despite her reserved nature, she's an excellent mentor with a kind heart. She's open about her failures and never brags about her successes. She always listens attentively and offers advice on not just my professional skills but also on interpersonal ones. Her sense of humor keeps our conversations incredibly engaging. We've remained friends to this day.",
+      "Having Tselot on your team guarantees thoughtful collaboration and exceptional design work.",
     ],
   },
   {
@@ -25,11 +25,11 @@ const testimonials = [
     role: "Chief Product Officer",
     image: avatar2,
     preview:
-      "I had the pleasure of working closely with Valentin at bitcoin.com. Throughout our time together, I was consistently impressed by their exceptional design skills, strategic thinking, and unwavering...",
+      "I had the pleasure of working closely with Tselot. Throughout our time together, I was consistently impressed by her exceptional design skills, strategic thinking, and unwavering...",
     full: [
-      "I had the pleasure of working closely with Valentin at bitcoin.com.",
-      "Throughout our time together, I was consistently impressed by their exceptional design skills, strategic thinking, and unwavering attention to quality. Valentin has a rare ability to combine strong visual taste with clear product thinking.",
-      "He consistently brought calm, clarity, and depth to complex product conversations, and his design work elevated the standard of the entire team.",
+      "I had the pleasure of working closely with Tselot.",
+      "Throughout our time together, I was consistently impressed by her exceptional design skills, strategic thinking, and unwavering attention to quality. Tselot has a rare ability to combine strong visual taste with clear product thinking.",
+      "She consistently brought calm, clarity, and depth to complex product conversations, and her design work elevated the standard of the entire team.",
     ],
   },
   {
@@ -38,11 +38,11 @@ const testimonials = [
     role: "Group Head of User Experience and Brand",
     image: avatar3,
     preview:
-      "As the Head of Design at Tyme Bank, I had the distinct pleasure of working closely with Valentin over the past few years. ...",
+      "I had the distinct pleasure of working closely with Tselot over the past few years. ...",
     full: [
-      "As the Head of Design at Tyme Bank, I had the distinct pleasure of working closely with Valentin over the past few years.",
-      "He brought a thoughtful approach to design leadership, a sharp eye for systems, and a deep understanding of how brand and product should connect.",
-      "Valentin is the kind of designer who raises the level of everyone around him.",
+      "I had the distinct pleasure of working closely with Tselot over the past few years.",
+      "She brought a thoughtful approach to design leadership, a sharp eye for systems, and a deep understanding of how brand and product should connect.",
+      "Tselot is the kind of designer who raises the level of everyone around her.",
     ],
   },
 ];

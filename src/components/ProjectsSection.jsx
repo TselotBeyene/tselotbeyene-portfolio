@@ -180,29 +180,29 @@ function CenterVisual({ progress }) {
   const next = projects[toIndex];
   const previous = fromIndex > 0 ? projects[fromIndex - 1] : null;
 
-  const centerW = 455;
-  const centerH = 620;
+  const centerW = 430;
+  const centerH = 580;
 
-  const upperRightW = 138;
-  const upperRightH = 185;
+  const upperRightW = 150;
+  const upperRightH = 200;
 
   const lowerLeftW = 150;
-  const lowerLeftH = 205;
+  const lowerLeftH = 200;
 
-  const bottomRightW = 155;
-  const bottomRightH = 205;
+  const bottomRightW = 150;
+  const bottomRightH = 200;
 
-  const centerX = 0;
-  const centerY = 0;
+  const centerX = -30;
+  const centerY = 150;
 
-  const upperLeftX = -235;
-  const upperLeftY = -235;
-  
-  const lowerRightX = 240;
-  const lowerRightY = 235;
+  const upperLeftX = -320;
+  const upperLeftY = -240;
 
-  const bottomRightX = 255;
-  const bottomRightY = 255;
+  const lowerRightX = 380;
+  const lowerRightY = 250;
+
+  const bottomRightX = 380;
+  const bottomRightY = 250;
 
   const containerY = lerp(30, 0, reveal);
 

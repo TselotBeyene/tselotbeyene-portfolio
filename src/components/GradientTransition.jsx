@@ -185,11 +185,11 @@ import {
           <div className="w-max whitespace-nowrap animate-[footerMarquee_18s_linear_infinite] text-[8rem] font-medium leading-none tracking-[-0.08em] text-black/95 md:text-[10rem] lg:text-[12rem]">
             <span className="mr-10">hello</span>
             <span className="mr-10 text-[#ff4d00]">@</span>
-            <span className="mr-16">valentincheval.design</span>
+            <span className="mr-16">tselotbeyene.com</span>
   
             <span className="mr-10">hello</span>
             <span className="mr-10 text-[#ff4d00]">@</span>
-            <span className="mr-16">valentincheval.design</span>
+            <span className="mr-16">tselotbeyene.com</span>
           </div>
         </div>
       </section>
