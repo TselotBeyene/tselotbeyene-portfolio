@@ -2,7 +2,7 @@ function Navbar() {
     return (
       <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 text-sm text-white/70 md:px-10 lg:px-14">
         <div className="text-[2rem] font-semibold tracking-tight md:text-[2.3rem]">
-          Valentin<span className="text-white/25">Cheval</span>
+          Tselot<span className="text-white/25">Beyene</span>
         </div>
   
         <div className="hidden items-center gap-3 md:flex">
