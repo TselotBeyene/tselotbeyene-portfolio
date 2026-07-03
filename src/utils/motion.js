@@ -8,9 +8,9 @@ export function easeInOutQuart(t) {
 
 export function getHandoffDurations(reducedMotion) {
   if (reducedMotion) {
-    return { move: 0, settle: 0, fade: 0 };
+    return { scroll: 0, fade: 0 };
   }
-  return { move: 1050, settle: 180, fade: 650 };
+  return { scroll: 420, fade: 340 };
 }
 
 export function prefersReducedMotion() {

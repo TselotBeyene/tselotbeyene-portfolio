@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import subjectImg from "../assets/Subject.png";
-import secondImg from "../assets/tselot_b.png";
+import HeroPortrait from "./HeroPortrait";
+import { HERO_PORTRAIT_IMAGE_Y, HERO_PORTRAIT_IMAGE_SCALE } from "../utils/heroPortraitLayout";
 
 const lerp = (a, b, t) => a + (b - a) * t;
 
-const MAX_PROGRESS = 1.45;
-const HANDOFF_AT = 1.32;
+const clamp01 = (value) => Math.min(1, Math.max(0, value));
+
+const BLACK_POINT = 0.32;
+const TAKEOVER_DONE_AT = BLACK_POINT + 0.2 + 0.52;
+const HANDOFF_AT = TAKEOVER_DONE_AT;
+const MAX_PROGRESS = 1.1;
 const SCROLL_SENSITIVITY = 0.0018;
 const PROGRESS_LERP = 0.28;
-const BLACK_POINT = 0.32;
 
 export default function FooterTransition({
   onLoopHandoff,
@@ -103,17 +107,21 @@ export default function FooterTransition({
 
   const orangeText = progress > 7.8 ? "#ea580c" : "#000000";
 
-  const scale = 0.7 + Math.min(imageProgress / 0.55, 1) * 1.1;
-  const x = Math.min(imageProgress / 0.55, 1) * 900;
-  const blur = imageProgress > 0.65 ? (imageProgress - 0.65) * 12 : 0;
+  const firstProminenceT = Math.min(1, imageProgress / 0.3);
+  const firstExitT = clamp01((imageProgress - 0.14) / 0.38);
 
-  const riseSpan = HANDOFF_AT - BLACK_POINT;
-  const secondT = Math.min(1, imageProgress / riseSpan);
+  const scale = 0.7 + firstProminenceT * 1.1;
+  const x = firstExitT * 1180;
+  const blur = firstExitT * 14;
+  const firstOpacity = (1 - firstExitT) * (handoffActive ? 0 : 1);
 
-  const secondOpacity = Math.min(1, imageProgress / 0.12);
-  const secondScale = 0.92 + secondT * 0.78;
-  const secondY = 160 - secondT * 520;
-  const secondX = 0;
+  const secondRevealT = Math.min(1, imageProgress / 0.12);
+  const takeoverT = clamp01((imageProgress - 0.2) / 0.52);
+
+  const secondImageY = lerp(180, HERO_PORTRAIT_IMAGE_Y, takeoverT);
+  const secondImageScale = lerp(0.82, HERO_PORTRAIT_IMAGE_SCALE, takeoverT);
+  const secondOpacity = secondRevealT;
+  const secondZ = takeoverT > 0.25 ? 40 : 20;
 
   return (
     <section
@@ -173,7 +181,7 @@ export default function FooterTransition({
 
         {/* MOVING EMAIL */}
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 overflow-hidden">
-          <div className="w-max whitespace-nowrap animate-[footerMarquee_18s_linear_infinite] text-[8rem] font-medium leading-none tracking-[-0.08em] text-black/95 md:text-[10rem] lg:text-[12rem]">
+          <div className="w-max whitespace-nowrap animate-[footerMarquee_18s_linear_infinite] text-[3.5rem] font-medium leading-none tracking-[-0.06em] text-black/95 md:text-[4.5rem] lg:text-[6.5rem]">
             <span className="mr-10">hello</span>
             <span style={{ color: orangeText }} className="mr-10">@</span>
             <span className="mr-16">tselotbeyene.com</span>
@@ -184,28 +192,30 @@ export default function FooterTransition({
           </div>
         </div>
 
-        {/* FIRST IMAGE */}
+        {/* FIRST IMAGE — exits off screen to the right */}
         <img
           src={subjectImg}
           alt="Subject"
           style={{
             transform: `translateX(calc(-50% + ${x}px)) scale(${scale})`,
             filter: `blur(${blur}px)`,
+            opacity: firstOpacity,
           }}
           className="pointer-events-none absolute bottom-[2vh] left-[40%] z-40 h-[85vh]"
         />
 
-        {/* SECOND IMAGE */}
-        <img
-          id="footer-portrait"
-          src={secondImg}
-          alt="Second"
-          style={{
-            transform: `translate(calc(-50% + ${secondX}px), ${secondY}px) scale(${secondScale})`,
-            opacity: handoffActive ? 0 : secondOpacity,
-          }}
-          className="pointer-events-none absolute bottom-[25vh] left-1/2 z-20 h-[60vh] origin-center"
-        />
+        {/* SECOND IMAGE — moves into the landing-page hero portrait position */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ opacity: secondOpacity, zIndex: secondZ }}
+        >
+          <HeroPortrait
+            imageY={secondImageY}
+            imageScale={secondImageScale}
+            imgId="footer-portrait"
+            frameId="footer-portrait-frame"
+          />
+        </div>
       </div>
     </section>
   );

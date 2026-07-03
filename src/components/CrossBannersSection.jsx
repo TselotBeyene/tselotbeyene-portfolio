@@ -25,19 +25,19 @@ function BannerRow({ items, reverse = false }) {
   }
   
   const topItems = [
-    "PRODUCT DESIGN",
-    "BRAND DESIGN & STRATEGY",
-    "VISUAL IDENTITY",
-    "ART DIRECTION",
-    "DIGITAL EXPERIENCE",
+    "FULL STACK DEVELOPMENT",
+    "BACKEND SYSTEMS & APIs",
+    "FRONTEND EXPERIENCES",
+    "DEVOPS & INFRASTRUCTURE",
+    "RELIABLE SOFTWARE",
   ];
-  
+
   const bottomItems = [
-    "OVER 100 CUSTOMERS",
-    "8 YEARS OF EXPERIENCE",
-    "INTERFACES",
-    "MOTION",
-    "CREATIVE DEVELOPMENT",
+    "JAVA & SPRING BOOT",
+    "REACT & MODERN WEB",
+    "DOCKER & KUBERNETES",
+    "CI/CD & CLOUD DEPLOY",
+    "FINTECH & COMPLIANCE",
   ];
   
   export default function CrossBannerSection() {

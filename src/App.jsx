@@ -34,15 +34,22 @@ function App() {
   }, []);
 
   const handleLoopHandoff = useCallback((resetFooter) => {
-    const footerEl = document.getElementById("footer-portrait");
-    if (!footerEl) {
+    const frame = document.getElementById("footer-portrait-frame");
+    const img = document.getElementById("footer-portrait");
+    const el = frame || img;
+
+    if (!el) {
       resetFooter();
       return;
     }
 
+    const rect = el.getBoundingClientRect();
     resetFooterRef.current = resetFooter;
-    setHeroHidden(true);
-    setHandoffRect(footerEl.getBoundingClientRect());
+
+    requestAnimationFrame(() => {
+      setHeroHidden(true);
+      setHandoffRect(rect);
+    });
   }, []);
 
   const handleHandoffArrive = useCallback(() => {

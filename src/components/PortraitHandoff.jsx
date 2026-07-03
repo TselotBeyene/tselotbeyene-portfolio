@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import portrait from "../assets/tselot_b.png";
-import { easeInOutQuart, getHandoffDurations } from "../utils/motion";
+import { easeInOutCubic, getHandoffDurations } from "../utils/motion";
+import { getHeroPortraitRect } from "../utils/heroPortraitLayout";
 
-function computeHeroRect() {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const width = Math.min(Math.max(0.32 * vw, 360), 520);
-  const height = vh;
-  const centerX = vw / 2;
-  const centerY = vh / 2 - 280;
+const FADE_MS = 340;
 
+function lerpRect(from, to, t) {
   return {
-    left: centerX - width / 2,
-    top: centerY - height / 2,
-    width,
-    height,
+    left: from.left + (to.left - from.left) * t,
+    top: from.top + (to.top - from.top) * t,
+    width: from.width + (to.width - from.width) * t,
+    height: from.height + (to.height - from.height) * t,
   };
 }
 
@@ -34,21 +30,19 @@ export default function PortraitHandoff({
   const cloneRef = useRef(null);
   const rafRef = useRef(null);
   const timeoutRef = useRef(null);
-  const [phase, setPhase] = useState("animating");
-  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState("scrolling");
 
   useEffect(() => {
     const clone = cloneRef.current;
     if (!clone || !fromRect) return;
 
-    const toRect = computeHeroRect();
-    const { move, settle, fade } = getHandoffDurations(reducedMotion);
+    const toRect = getHeroPortraitRect();
+    const { scroll, fade } = getHandoffDurations(reducedMotion);
     const scrollStart = window.scrollY;
 
-    const startCrossfade = () => {
-      applyRect(clone, toRect);
+    const finishHandoff = () => {
       window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      setProgress(1);
+      applyRect(clone, toRect);
       onArrive?.();
       setPhase("crossfading");
 
@@ -60,36 +54,41 @@ export default function PortraitHandoff({
       timeoutRef.current = window.setTimeout(onComplete, fade);
     };
 
-    if (move === 0) {
-      startCrossfade();
+    if (scroll === 0) {
+      finishHandoff();
       return;
     }
 
+    applyRect(clone, fromRect);
+
     const t0 = performance.now();
+    const needsNudge =
+      Math.abs(fromRect.left - toRect.left) > 2 ||
+      Math.abs(fromRect.top - toRect.top) > 2 ||
+      Math.abs(fromRect.width - toRect.width) > 2 ||
+      Math.abs(fromRect.height - toRect.height) > 2;
 
     const tick = (now) => {
-      const t = Math.min(1, (now - t0) / move);
-      const eased = easeInOutQuart(t);
+      const t = Math.min(1, (now - t0) / scroll);
+      const eased = easeInOutCubic(t);
 
-      const scrollTop = scrollStart * (1 - eased);
-      window.scrollTo({ top: scrollTop, left: 0, behavior: "instant" });
-
-      applyRect(clone, {
-        left: fromRect.left + (toRect.left - fromRect.left) * eased,
-        top: fromRect.top + (toRect.top - fromRect.top) * eased,
-        width: fromRect.width + (toRect.width - fromRect.width) * eased,
-        height: fromRect.height + (toRect.height - fromRect.height) * eased,
+      window.scrollTo({
+        top: scrollStart * (1 - eased),
+        left: 0,
+        behavior: "instant",
       });
 
-      setProgress(eased * 0.92);
+      if (needsNudge) {
+        const nudgeT = Math.min(1, eased * 1.15);
+        applyRect(clone, lerpRect(fromRect, toRect, nudgeT));
+      } else {
+        applyRect(clone, fromRect);
+      }
 
       if (t < 1) {
         rafRef.current = requestAnimationFrame(tick);
-      } else if (settle > 0) {
-        setPhase("settling");
-        timeoutRef.current = window.setTimeout(startCrossfade, settle);
       } else {
-        startCrossfade();
+        finishHandoff();
       }
     };
 
@@ -110,7 +109,7 @@ export default function PortraitHandoff({
       className="pointer-events-none fixed inset-0 z-[9999] bg-[#070707]"
       style={{
         opacity: isCrossfading ? 0 : 1,
-        transition: reducedMotion ? "none" : "opacity 650ms ease-in-out",
+        transition: reducedMotion ? "none" : `opacity ${FADE_MS}ms ease-in-out`,
       }}
       aria-busy={!isCrossfading}
       aria-live="polite"
@@ -130,20 +129,6 @@ export default function PortraitHandoff({
           height: fromRect.height,
         }}
       />
-
-      {!reducedMotion && (
-        <div className="absolute bottom-8 left-1/2 z-10 w-[min(18rem,70vw)] -translate-x-1/2">
-          <div className="mb-2 text-center text-xs tracking-wide text-white/45">
-            Returning to start
-          </div>
-          <div className="h-[2px] overflow-hidden rounded-full bg-white/10">
-            <div
-              className="h-full rounded-full bg-[#ff5a0a]"
-              style={{ width: `${Math.round(progress * 100)}%` }}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
