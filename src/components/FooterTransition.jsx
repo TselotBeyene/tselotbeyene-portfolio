@@ -4,12 +4,24 @@ import secondImg from "../assets/tselot_b.png";
 
 const lerp = (a, b, t) => a + (b - a) * t;
 
-export default function FooterTransition({ onLoopHandoff, handoffActive }) {
+const MAX_PROGRESS = 1.45;
+const HANDOFF_AT = 1.32;
+const SCROLL_SENSITIVITY = 0.0018;
+const PROGRESS_LERP = 0.28;
+const BLACK_POINT = 0.32;
+
+export default function FooterTransition({
+  onLoopHandoff,
+  handoffActive,
+  reducedMotion = false,
+}) {
   const [progress, setProgress] = useState(0);
   const targetRef = useRef(0);
   const currentRef = useRef(0);
   const rafRef = useRef(null);
   const handoffTriggeredRef = useRef(false);
+  const progressLerp = reducedMotion ? 1 : PROGRESS_LERP;
+  const scrollSensitivity = reducedMotion ? 0.0024 : SCROLL_SENSITIVITY;
 
   const resetFooter = () => {
     targetRef.current = 0;
@@ -28,12 +40,17 @@ export default function FooterTransition({ onLoopHandoff, handoffActive }) {
     if (rafRef.current != null) return;
 
     const tick = () => {
-      const next = lerp(currentRef.current, targetRef.current, 0.2);
+      const next = lerp(currentRef.current, targetRef.current, progressLerp);
       currentRef.current = next;
       setProgress(next);
 
-      // once the eased motion has settled near the end, hand off to the hero
-      if (next >= 2.97 && onLoopHandoff && !handoffTriggeredRef.current) {
+      if (
+        targetRef.current >= HANDOFF_AT &&
+        next >= HANDOFF_AT &&
+        Math.abs(targetRef.current - next) < 0.025 &&
+        onLoopHandoff &&
+        !handoffTriggeredRef.current
+      ) {
         handoffTriggeredRef.current = true;
         rafRef.current = null;
         onLoopHandoff(resetFooter);
@@ -53,33 +70,49 @@ export default function FooterTransition({ onLoopHandoff, handoffActive }) {
   };
 
   const handleWheel = (e) => {
+    if (handoffActive) return;
+
+    const delta = e.deltaY * scrollSensitivity;
+
+    // At the start of the footer, scrolling up should return to the page above.
+    if (
+      delta < 0 &&
+      targetRef.current <= 0 &&
+      currentRef.current < 0.005
+    ) {
+      targetRef.current = 0;
+      currentRef.current = 0;
+      handoffTriggeredRef.current = false;
+      setProgress(0);
+      return;
+    }
+
     e.preventDefault();
-    targetRef.current = Math.min(3, Math.max(0, targetRef.current + e.deltaY * 0.0006));
+
+    targetRef.current = Math.min(MAX_PROGRESS, Math.max(0, targetRef.current + delta));
+
+    if (targetRef.current < HANDOFF_AT) {
+      handoffTriggeredRef.current = false;
+    }
+
     runLoop();
   };
   // progress split
-  const introProgress = Math.min(progress, 1);
+  const introProgress = Math.min(progress, 0.85);
+  const imageProgress = Math.max(0, progress - BLACK_POINT);
 
-  // the background finishes sliding down to black around progress 0.45
-  const blackPoint = 0.45;
-  const imageProgress = Math.max(0, progress - blackPoint);
-
-  // orange becomes black during intro
   const orangeText = progress > 7.8 ? "#ea580c" : "#000000";
 
-  // FIRST IMAGE (subject exits to the right once the background is black)
-  const scale = 0.7 + imageProgress * 1.2;
-  const x = imageProgress * 900;
-  const blur = imageProgress > 1.0 ? (imageProgress - 1.0) * 10 : 0;
+  const scale = 0.7 + Math.min(imageProgress / 0.55, 1) * 1.1;
+  const x = Math.min(imageProgress / 0.55, 1) * 900;
+  const blur = imageProgress > 0.65 ? (imageProgress - 0.65) * 12 : 0;
 
-  // SECOND IMAGE (portrait) — starts right after black and keeps rising across
-  // the whole remaining scroll so it is still moving when the handoff fires.
-  const secondT = Math.min(1, imageProgress / 2.45);
-  const secondEase = secondT * secondT * (3 - 2 * secondT);
+  const riseSpan = HANDOFF_AT - BLACK_POINT;
+  const secondT = Math.min(1, imageProgress / riseSpan);
 
-  const secondOpacity = Math.min(1, imageProgress / 0.18);
-  const secondScale = 0.6 + secondEase * 1.05;
-  const secondY = 200 - secondEase * 440;
+  const secondOpacity = Math.min(1, imageProgress / 0.12);
+  const secondScale = 0.92 + secondT * 0.78;
+  const secondY = 160 - secondT * 520;
   const secondX = 0;
 
   return (
@@ -101,17 +134,19 @@ export default function FooterTransition({ onLoopHandoff, handoffActive }) {
         {/* LEFT SIDE */}
         <div className="absolute left-10 top-[20vh] space-y-16 text-sm">
           <div>
-            <h3 className="mb-3 font-bold">Socials</h3>
-            <p style={{ color: orangeText }} className="font-semibold">LinkedIn</p>
-            <p style={{ color: orangeText }} className="font-semibold">Dribbble</p>
-            <p style={{ color: orangeText }} className="font-semibold">Twitter/X</p>
+            <h3 className="mb-3 font-bold">Profiles</h3>
+            <p style={{ color: orangeText }} className="font-semibold">GitHub</p>
+            <p style={{ color: orangeText }} className="font-semibold">Email</p>
           </div>
 
           <div>
             <h3 className="mb-3 font-bold">Contact me</h3>
-            <p style={{ color: orangeText }} className="font-semibold">Email</p>
-            <p style={{ color: orangeText }} className="font-semibold">WhatsApp</p>
-            <p style={{ color: orangeText }} className="font-semibold">Telegram</p>
+            <p style={{ color: orangeText }} className="font-semibold">
+              tselotbeyene70@gmail.com
+            </p>
+            <p style={{ color: orangeText }} className="font-semibold">
+              +251 936 679 199
+            </p>
           </div>
 
           <div>
@@ -125,13 +160,14 @@ export default function FooterTransition({ onLoopHandoff, handoffActive }) {
         {/* RIGHT TEXT */}
         <div className="absolute right-16 top-[40vh] max-w-[600px]">
           <h1 className="text-4xl mb-10 leading-tight">
-            As a designer and Rotarian, I believe in service above self.
+            I build full stack products and software systems that stay fast,
+            maintainable, and dependable.
           </h1>
 
           <p className="text-4xl leading-tight">
-            Being a designer is about serving user needs. It’s dedicating
-            yourself to finding the right balance between user needs and
-            business goals.
+            From frontend experiences to backend services and delivery
+            infrastructure, I focus on products that need clean architecture,
+            stable operations, and secure deployment practices.
           </p>
         </div>
 
@@ -168,7 +204,7 @@ export default function FooterTransition({ onLoopHandoff, handoffActive }) {
             transform: `translate(calc(-50% + ${secondX}px), ${secondY}px) scale(${secondScale})`,
             opacity: handoffActive ? 0 : secondOpacity,
           }}
-          className="pointer-events-none absolute bottom-[25vh] left-1/2 z-20 h-[60vh] origin-center transition-all duration-300 ease-out"
+          className="pointer-events-none absolute bottom-[25vh] left-1/2 z-20 h-[60vh] origin-center"
         />
       </div>
     </section>

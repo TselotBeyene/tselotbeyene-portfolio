@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-
-import projectImage1 from "../assets/tselot.jpg";
-import projectImage2 from "../assets/tselot_b.jpg";
-import projectImage3 from "../assets/tselot3.jpg";
+import ProjectVisual from "./ProjectVisual";
+import { projects } from "../data/projects";
 
 function clamp(value, min = 0, max = 1) {
   return Math.min(Math.max(value, min), max);
@@ -23,38 +21,22 @@ function easeInOutCubic(t) {
     : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-const projects = [
-  {
-    id: "01",
-    title: "BITMEX",
-    year: "2023",
-    role: "Head of Design & Brand",
-    description:
-      "BitMEX is one of the key leaders in centralized exchange, founded in 2014. As head of design, I helped reposition their brand strategy.",
-    image: projectImage1,
-    thumb: projectImage1,
-  },
-  {
-    id: "02",
-    title: "DEFICHAIN",
-    year: "2020",
-    role: "Lead Product Designer",
-    description:
-      "DeFiScan is an ERC-20 explorer solution for DeFiMetachain, the Ethereum blockchain solution for Defichain.",
-    image: projectImage2,
-    thumb: projectImage2,
-  },
-  {
-    id: "03",
-    title: "TYME BANK",
-    year: "2021",
-    role: "Lead Product Designer",
-    description:
-      "One of the fastest growing digital banks in SEA and Africa. I worked on investment product experiences and broader brand-facing design decisions across the platform.",
-    image: projectImage3,
-    thumb: projectImage3,
-  },
-];
+function OpenCursor({ visible, x, y }) {
+  return (
+    <div
+      className="pointer-events-none fixed left-0 top-0 z-[100] hidden lg:block"
+      style={{
+        transform: `translate3d(${x - 44}px, ${y - 44}px, 0)`,
+        opacity: visible ? 1 : 0,
+        transition: "opacity 120ms ease",
+      }}
+    >
+      <div className="flex h-[88px] w-[88px] items-center justify-center rounded-full bg-[#ff5a0a] text-[1.05rem] font-medium text-white shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
+        Open
+      </div>
+    </div>
+  );
+}
 
 function getSequence(progress) {
   const reveal = clamp(mapRange(progress, 0.14, 0.24, 0, 1));
@@ -66,50 +48,89 @@ function getSequence(progress) {
   const raw = normalized * segmentCount;
 
   const fromIndex = Math.min(Math.floor(raw), projects.length - 1);
-const toIndex = Math.min(fromIndex + 1, projects.length - 1);
+  const toIndex = Math.min(fromIndex + 1, projects.length - 1);
 
-let t = raw - fromIndex;
+  let t = raw - fromIndex;
+  if (fromIndex === projects.length - 1) t = 1;
 
-if (fromIndex === projects.length - 1) {
-  t = 1;
+  const localT = easeInOutCubic(t);
+
+  return {
+    reveal,
+    fromIndex,
+    toIndex,
+    localT,
+    isTransitioning: fromIndex !== toIndex && t > 0 && t < 1,
+  };
 }
 
-const localT = easeInOutCubic(t);
+function ThumbnailRail({
+  activeIndex,
+  progress,
+  onOpenProject,
+  setCursorVisible,
+  setCursorPos,
+}) {
+  const { fromIndex, toIndex, localT, isTransitioning } = getSequence(progress);
+  const currentProject = projects[fromIndex];
+  const upcomingProject = projects[toIndex];
+  const displayProject = projects[activeIndex];
+  const totalCount = projects.length.toString().padStart(2, "0");
 
-return {
-  reveal,
-  fromIndex,
-  toIndex,
-  localT,
-  // ✅ fix: only true during actual transition
-  isTransitioning: fromIndex !== toIndex && t > 0 && t < 1,
-};
-}
-
-function ThumbnailRail({ activeIndex }) {
   return (
     <div className="absolute left-[3.2rem] top-[22%] z-30 hidden lg:block">
-      <div className="flex flex-col gap-[0.35rem]">
-        {projects.map((project, index) => {
-          const isActive = index === activeIndex;
-
-          return (
-            <div key={project.id} className="flex flex-col items-start">
+      <div className="flex flex-col items-start">
+        <div className="mb-4 h-px w-[3.8rem] bg-white/12" />
+        <button
+          type="button"
+          onClick={() => onOpenProject(displayProject.slug)}
+          onMouseEnter={() => setCursorVisible(true)}
+          onMouseLeave={() => setCursorVisible(false)}
+          onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
+          className="relative h-[4.8rem] w-[3.7rem] overflow-hidden border border-[#ff5a0a] transition-all duration-500"
+        >
+          {isTransitioning ? (
+            <>
               <div
-                className={`relative h-[4.8rem] w-[3.7rem] overflow-hidden border transition-all duration-500 ${
-                  isActive ? "border-[#ff5a0a]" : "border-white/12"
-                }`}
+                className="absolute inset-0"
+                style={{
+                  transform: `translateY(${lerp(0, -100, localT)}%) scale(${lerp(
+                    1,
+                    0.92,
+                    localT
+                  )})`,
+                  opacity: lerp(1, 0, localT),
+                  transformOrigin: "center center",
+                }}
               >
-                <img
-                  src={project.thumb}
-                  alt={project.title}
-                  className="h-full w-full object-cover"
-                />
+                <ProjectVisual project={currentProject} compact />
               </div>
-              <div className="mt-[0.35rem] h-px w-[3.7rem] bg-white/12" />
-            </div>
-          );
-        })}
+              <div
+                className="absolute inset-0"
+                style={{
+                  transform: `translateY(${lerp(100, 0, localT)}%) scale(${lerp(
+                    0.92,
+                    1,
+                    localT
+                  )})`,
+                  opacity: lerp(0, 1, localT),
+                  transformOrigin: "center center",
+                }}
+              >
+                <ProjectVisual project={upcomingProject} compact />
+              </div>
+            </>
+          ) : (
+            <ProjectVisual project={displayProject} compact />
+          )}
+        </button>
+        <div className="mt-[0.35rem] h-[3px] w-[3.7rem] bg-[#ff5a0a]" />
+        <div className="mt-6 text-[1.1rem] tracking-[-0.04em] text-white/92">
+          <span>{displayProject.id}</span>
+          <span className="mx-2 text-white/28">/</span>
+          <span className="text-white/28">{totalCount}</span>
+        </div>
+        <div className="mt-4 h-px w-[3.8rem] bg-white/12" />
       </div>
     </div>
   );
@@ -162,17 +183,17 @@ function MotionImage({ project, style, zIndex = 1 }) {
       className="absolute left-1/2 top-1/2 overflow-hidden"
       style={{ ...style, zIndex }}
     >
-      <img
-        src={project.image}
-        alt={project.title}
-        className="h-full w-full object-cover"
-        draggable="false"
-      />
+      <ProjectVisual project={project} />
     </div>
   );
 }
 
-function CenterVisual({ progress }) {
+function CenterVisual({
+  progress,
+  onOpenProject,
+  setCursorVisible,
+  setCursorPos,
+}) {
   const { reveal, fromIndex, toIndex, localT, isTransitioning } =
     getSequence(progress);
 
@@ -180,29 +201,29 @@ function CenterVisual({ progress }) {
   const next = projects[toIndex];
   const previous = fromIndex > 0 ? projects[fromIndex - 1] : null;
 
-  const centerW = 430;
-  const centerH = 580;
+  const centerW = 460;
+  const centerH = 620;
 
-  const upperRightW = 150;
-  const upperRightH = 200;
+  const upperRightW = 165;
+  const upperRightH = 225;
 
-  const lowerLeftW = 150;
-  const lowerLeftH = 200;
+  const lowerLeftW = 165;
+  const lowerLeftH = 225;
 
-  const bottomRightW = 150;
-  const bottomRightH = 200;
+  const bottomRightW = 165;
+  const bottomRightH = 225;
 
-  const centerX = -30;
-  const centerY = 150;
+  const centerX = 20;
+  const centerY = 95;
 
-  const upperLeftX = -320;
-  const upperLeftY = -240;
+  const upperLeftX = -275;
+  const upperLeftY = -195;
 
-  const lowerRightX = 380;
-  const lowerRightY = 250;
+  const lowerRightX = 235;
+  const lowerRightY = 185;
 
-  const bottomRightX = 380;
-  const bottomRightY = 250;
+  const bottomRightX = 235;
+  const bottomRightY = 185;
 
   const containerY = lerp(30, 0, reveal);
 
@@ -242,37 +263,45 @@ function CenterVisual({ progress }) {
     opacity: reveal,
   };
 
-  const bottomRightStyle = {
-    width: `${bottomRightW}px`,
-    height: `${bottomRightH}px`,
-    transform: `translate3d(calc(-50% + ${bottomRightX}px), calc(-50% + ${bottomRightY}px + ${containerY}px), 0)`,
-    opacity: clamp(mapRange(progress, 0.72, 0.88, 0, 1)),
-  };
-
   return (
     <div className="absolute inset-0 z-20 hidden lg:block">
       <div className="absolute left-1/2 top-1/2 h-[760px] w-[900px] -translate-x-1/2 -translate-y-1/2">
-{isTransitioning && localT > 0 && localT < 1 ? (
-  <>
-    <MotionImage project={current} style={outgoingStyle} zIndex={4} />
-    <MotionImage project={next} style={incomingStyle} zIndex={3} />
-  </>
-) : (
-  <>
-    {fromIndex > 0 && fromIndex < projects.length - 1 && previous && (      
-        <MotionImage
-        project={previous}
-        style={parkedUpperRightStyle}
-        zIndex={2}
-      />
-    )}
+        {isTransitioning && localT > 0 && localT < 1 ? (
+          <>
+            <MotionImage project={current} style={outgoingStyle} zIndex={4} />
+            <MotionImage project={next} style={incomingStyle} zIndex={3} />
+          </>
+        ) : (
+          <>
+            {fromIndex > 0 && fromIndex < projects.length - 1 && previous && (
+              <MotionImage
+                project={previous}
+                style={parkedUpperRightStyle}
+                zIndex={2}
+              />
+            )}
 
-    <MotionImage project={current} style={centerStyle} zIndex={3} />
-  </>
-)}
+            <button
+              type="button"
+              onClick={() => onOpenProject(current.slug)}
+              onMouseEnter={() => setCursorVisible(true)}
+              onMouseLeave={() => setCursorVisible(false)}
+              onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
+              className="absolute left-1/2 top-1/2 overflow-hidden text-left"
+              style={{ ...centerStyle, zIndex: 3 }}
+            >
+              <ProjectVisual project={current} />
+            </button>
+          </>
+        )}
 
-        {fromIndex === 2 && (
-          <div
+        {fromIndex === projects.length - 1 && (
+          <button
+            type="button"
+            onClick={() => onOpenProject(current.slug)}
+            onMouseEnter={() => setCursorVisible(true)}
+            onMouseLeave={() => setCursorVisible(false)}
+            onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
             className="absolute left-1/2 top-1/2 flex h-[5.4rem] w-[5.4rem] items-center justify-center rounded-full bg-[#ff5a0a] text-[1.1rem] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
             style={{
               opacity: clamp(mapRange(progress, 0.72, 0.88, 0, 1)),
@@ -284,7 +313,7 @@ function CenterVisual({ progress }) {
             }}
           >
             View
-          </div>
+          </button>
         )}
       </div>
     </div>
@@ -293,6 +322,7 @@ function CenterVisual({ progress }) {
 
 function LeftBottomTitle({ activeIndex, progress }) {
   const opacity = clamp(mapRange(progress, 0.16, 0.24, 0, 1));
+  const totalCount = projects.length.toString().padStart(2, "0");
 
   return (
     <div
@@ -302,7 +332,7 @@ function LeftBottomTitle({ activeIndex, progress }) {
       <div className="text-[1.1rem] tracking-[-0.04em] text-white/92">
         <span>{projects[activeIndex].id}</span>
         <span className="mx-2 text-white/28">/</span>
-        <span className="text-white/28">03</span>
+        <span className="text-white/28">{totalCount}</span>
       </div>
 
       <div className="mt-6 h-px w-[3.8rem] bg-white/12" />
@@ -318,7 +348,13 @@ function LeftBottomTitle({ activeIndex, progress }) {
   );
 }
 
-function RightMeta({ activeIndex, progress }) {
+function RightMeta({
+  activeIndex,
+  progress,
+  onOpenProject,
+  setCursorVisible,
+  setCursorPos,
+}) {
   const project = projects[activeIndex];
   const opacity = clamp(mapRange(progress, 0.16, 0.24, 0, 1));
 
@@ -349,20 +385,26 @@ function RightMeta({ activeIndex, progress }) {
           </p>
         </div>
 
-        <a
-          href="#"
+        <button
+          type="button"
+          onClick={() => onOpenProject(project.slug)}
+          onMouseEnter={() => setCursorVisible(true)}
+          onMouseLeave={() => setCursorVisible(false)}
+          onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
           className="inline-flex items-center gap-2 pt-2 text-[1.05rem] font-medium text-[#ff5a0a] underline underline-offset-4"
         >
-          All projects <span>↗</span>
-        </a>
+          View project <span>↗</span>
+        </button>
       </div>
     </div>
   );
 }
 
-export default function ProjectsSection() {
+export default function ProjectsSection({ onOpenProject }) {
   const sectionRef = useRef(null);
   const [progress, setProgress] = useState(0);
+  const [cursorVisible, setCursorVisible] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -393,21 +435,45 @@ export default function ProjectsSection() {
   return (
     <section
       ref={sectionRef}
+      onMouseMove={(e) => {
+        if (cursorVisible) {
+          setCursorPos({ x: e.clientX, y: e.clientY });
+        }
+      }}
       className="relative h-[430vh] bg-[#020202] text-white"
     >
+      <OpenCursor visible={cursorVisible} x={cursorPos.x} y={cursorPos.y} />
       <div className="sticky top-0 h-screen overflow-hidden bg-[#020202]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(120,18,10,0.12)_0%,rgba(120,18,10,0.03)_28%,rgba(0,0,0,0)_60%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:120px_100%] opacity-[0.04]" />
 
         <IntroOverlay progress={progress} />
-        <ThumbnailRail activeIndex={activeIndex} />
-        <CenterVisual progress={progress} />
+        <ThumbnailRail
+          activeIndex={activeIndex}
+          progress={progress}
+          onOpenProject={onOpenProject}
+          setCursorVisible={setCursorVisible}
+          setCursorPos={setCursorPos}
+        />
+        <CenterVisual
+          progress={progress}
+          onOpenProject={onOpenProject}
+          setCursorVisible={setCursorVisible}
+          setCursorPos={setCursorPos}
+        />
         <LeftBottomTitle activeIndex={activeIndex} progress={progress} />
-        <RightMeta activeIndex={activeIndex} progress={progress} />
+        <RightMeta
+          activeIndex={activeIndex}
+          progress={progress}
+          onOpenProject={onOpenProject}
+          setCursorVisible={setCursorVisible}
+          setCursorPos={setCursorPos}
+        />
 
         <div className="absolute bottom-8 left-6 right-6 z-40 lg:hidden">
           <div className="mb-3 text-sm text-white/70">
-            {projects[activeIndex].id} / 03
+            {projects[activeIndex].id} /{" "}
+            {projects.length.toString().padStart(2, "0")}
           </div>
           <h3 className="text-[2.6rem] font-semibold leading-[0.92] tracking-[-0.07em] text-white">
             {projects[activeIndex].title}

@@ -10,26 +10,24 @@ function mapRange(value, inMin, inMax, outMin, outMax) {
 }
 
 const introWords = [
-  "Software", "development", "should", "be", "seamless,", "robust,", "and",
-   "innovative.", "I", "specialize", "in", "full-stack", "engineering", "to", 
-   "build", "solutions", "that", "are", "both", "technically", "sound", "and",
-   "user-friendly.", "By", "mastering", "front-end", "and", "back-end", "technologies,",
-   "I", "design", "and", "implement", "systems", "that", "scale", "effortlessly,",
-   "perform", "reliably,", "and", "deliver", "exceptional", "user", "experiences.", 
-   "Through", "careful", "architecture,", "clean", "code,", "and", "strategic",
-   "problem-solving,", "I've", "helped", "startups,", "tech", "companies,",
-   "and", "enterprise", "platforms", "optimize", "performance,", "increase",
-   "engagement,", "and", "accelerate", "growth.", "My", "goal", "is", "to",
-   "create", "software", "that", "is", "efficient,", "maintainable,", "and", 
-   "a", "joy", "to", "interact", "with.", "I", "believe", "technology", "should",
-   "empower", "people,", "simplify", "complex", "problems,", "and", "drive", "meaningful", "impact.",
+  "Software", "products", "should", "be", "useful,", "reliable,", "and",
+  "well-crafted.", "I", "work", "as", "a", "full", "stack", "developer,",
+  "building", "frontend", "experiences,", "backend", "services,", "and",
+  "infrastructure", "that", "work", "together", "smoothly.", "From", "web",
+  "interfaces", "and", "REST", "APIs", "to", "Linux", "servers,", "CI/CD",
+  "pipelines,", "monitoring,", "and", "containerized", "deployments,", "I",
+  "focus", "on", "shipping", "systems", "that", "scale,", "stay", "observable,",
+  "and", "solve", "real", "business", "problems.", "My", "experience", "spans",
+  "financial", "platforms,", "compliance", "tools,", "and", "integration-heavy",
+  "products", "where", "both", "product", "delivery", "and", "technical",
+  "execution", "matter.",
 ];
 
-const awards = [
-  { title: "Red Dot Award", year: "2023", client: "GoTyme" },
-  { title: "UX Design Award", year: "2023", client: "GoTyme" },
-  { title: "Design For Asia", year: "2023", client: "GoTyme" },
-  { title: "Creativepool Design Award", year: "2023", client: "GoTyme" },
+const experienceHighlights = [
+  { title: "ArifPay", year: "2025", client: "DevOps Engineer" },
+  { title: "Andrew Williams Solicitors", year: "2024", client: "Full Stack Developer" },
+  { title: "Atlas Computer Technologies", year: "2022", client: "DevOps Engineer" },
+  { title: "RouteForge", year: "2026", client: "Personal Project" },
 ];
 
 function LogoTile({ children, muted = false }) {
@@ -49,10 +47,10 @@ function IntroSection({ progress = 0 }) {
     const introReadingPhase = mapRange(progress, 0, 0.7, 0, 1);
     const activeWordIndex = Math.floor(introReadingPhase * (introWords.length - 1));
   
-    // Left rail scrolls slowly
-    const leftY = mapRange(progress, 0, 1, 0, -600);
-    // Right side scrolls fast
-    const rightY = mapRange(progress, 0.7, 1, 0, -1500);
+    // Left rail scrolls steadily through the whole section.
+    const leftY = mapRange(progress, 0, 1, 0, -760);
+    // Right side starts moving earlier so it doesn't feel parked.
+    const rightY = mapRange(progress, 0.18, 1, 0, -1700);
   
     const fadeMask = "linear-gradient(to bottom, transparent 0px, black 20px)";
   
@@ -79,25 +77,25 @@ function IntroSection({ progress = 0 }) {
             </h2>
             <div className="mt-16 w-[34rem] max-w-full">
               <div className="grid grid-cols-4 gap-0">
-                <LogoTile>Liquid</LogoTile>
+                <LogoTile>ArifPay</LogoTile>
                 <div /><div /><div />
                 <div />
-                <LogoTile>GOtyme bank</LogoTile>
+                <LogoTile>AWS</LogoTile>
                 <div /><div />
-                <LogoTile>Your logo here</LogoTile>
+                <LogoTile>IBIAB</LogoTile>
                 <div />
-                <LogoTile>Bitcoin.com</LogoTile>
-                <div />
-                <div />
-                <LogoTile>defichain</LogoTile>
-                <div />
-                <LogoTile>BitMEX</LogoTile>
-                <LogoTile muted>Birthday Research</LogoTile>
-                <div />
-                <LogoTile muted>Babylon</LogoTile>
+                <LogoTile>Atlas</LogoTile>
                 <div />
                 <div />
-                <LogoTile muted>Diag</LogoTile>
+                <LogoTile>SEP</LogoTile>
+                <div />
+                <LogoTile>RouteForge</LogoTile>
+                <LogoTile muted>Apache Camel</LogoTile>
+                <div />
+                <LogoTile muted>Spring Boot</LogoTile>
+                <div />
+                <div />
+                <LogoTile muted>Docker</LogoTile>
                 <div /><div />
                 <LogoTile muted />
                 <div /><div /><div />
@@ -134,7 +132,7 @@ function IntroSection({ progress = 0 }) {
                     return (
                       <span
                         key={index}
-                        className={`inline-block transition-all duration-2l00 ${opacity} ${
+                        className={`inline-block ${opacity} ${
                           index === activeWordIndex ? "scale-[1.02]" : "scale-[1]"
                         }`}
                       >
@@ -159,10 +157,10 @@ function IntroSection({ progress = 0 }) {
               {/* AWARDS */}
               <div className="pt-8">
                 <h2 className="mb-16 text-[1.2rem] font-medium tracking-tight text-white md:text-[1.6rem]">
-                  AWARDS
+                  EXPERIENCE
                 </h2>
                 <div className="border-t border-white/10">
-                  {awards.map((award, index) => (
+                  {experienceHighlights.map((award, index) => (
                     <div
                       key={`${award.title}-${index}`}
                       className="grid grid-cols-[1.6fr_0.6fr_0.8fr] items-center border-b border-white/10 py-8 text-white/55"

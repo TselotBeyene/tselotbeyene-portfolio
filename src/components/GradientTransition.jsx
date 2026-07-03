@@ -79,14 +79,13 @@ import {
           {/* LEFT COLUMN */}
           <div className="col-span-3 flex flex-col justify-end pb-0">
             <div>
-              <p className="mb-6 text-[13px] text-black/45">Good morning!</p>
+              <p className="mb-6 text-[13px] text-black/45">Software engineer</p>
   
               <div className="mb-10">
-                <p className="mb-3 text-[14px] font-medium text-black">Socials</p>
+                <p className="mb-3 text-[14px] font-medium text-black">Profiles</p>
                 <ul className="space-y-1 text-[14px]">
-                  <li className="cursor-pointer text-[#ff4d00]">LinkedIn</li>
-                  <li className="cursor-pointer text-[#ff4d00]">Dribbble</li>
-                  <li className="cursor-pointer text-[#ff4d00]">Twitter/X</li>
+                  <li className="cursor-pointer text-[#ff4d00]">GitHub</li>
+                  <li className="cursor-pointer text-[#ff4d00]">Email</li>
                 </ul>
               </div>
   
@@ -95,9 +94,8 @@ import {
                   Contact me
                 </p>
                 <ul className="space-y-1 text-[14px]">
-                  <li className="cursor-pointer text-[#ff4d00]">Email</li>
-                  <li className="cursor-pointer text-[#ff4d00]">WhatsApp</li>
-                  <li className="cursor-pointer text-[#ff4d00]">Telegram</li>
+                  <li className="cursor-pointer text-[#ff4d00]">tselotbeyene70@gmail.com</li>
+                  <li className="cursor-pointer text-[#ff4d00]">+251 936 679 199</li>
                 </ul>
               </div>
             </div>
@@ -120,13 +118,13 @@ import {
           {/* RIGHT TEXT */}
           <div className="relative z-20 col-span-5 flex flex-col justify-end pb-0">
             <h2 className="mb-8 max-w-[620px] text-[30px] font-medium leading-[1.4] text-[#222]">
-              As a designer and Rotarian, I believe in service above self.
+              I build full stack products with a strong foundation in software engineering, backend systems, and DevOps.
             </h2>
   
             <p className="max-w-[640px] text-[20px] leading-[1.7] text-[#555]">
-              Being a designer is about serving user needs. It’s dedicating
-              yourself to finding the right balance between user needs and
-              business goals.
+              My work spans frontend implementation, APIs, databases, Linux
+              infrastructure, CI/CD pipelines, monitoring, and cloud-ready
+              deployments for financial and compliance-focused platforms.
             </p>
           </div>
         </motion.div>

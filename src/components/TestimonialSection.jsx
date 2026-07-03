@@ -7,42 +7,39 @@ import avatar3 from "../assets/tselot3.jpg";
 const testimonials = [
   {
     id: "01.",
-    name: "Long (Peter) Tran",
-    role: "Motion & Interaction Designer - Specialising in the UI/UX industry",
+    name: "Testimonial Placeholder",
+    role: "Professional reference pending",
     image: avatar1,
     preview:
-      "As a motion designer on her team, I've received tremendous support and inspiration from Tselot. ...",
+      "A real testimonial can be added here once a client, teammate, or manager quote is available.",
     full: [
-      "As a motion designer on her team, I've received tremendous support and inspiration from Tselot.",
-      "On any given day, if there was a UI sketch on a piece of paper, it belonged to Tselot. Her deep knowledge of design is evident, and her work never fails to impress me. I've always been curious about what makes her work so distinct and beautiful. In my eyes, she is one of the finest designers on the team, known for her high-quality work.",
-      "Despite her reserved nature, she's an excellent mentor with a kind heart. She's open about her failures and never brags about her successes. She always listens attentively and offers advice on not just my professional skills but also on interpersonal ones. Her sense of humor keeps our conversations incredibly engaging. We've remained friends to this day.",
-      "Having Tselot on your team guarantees thoughtful collaboration and exceptional design work.",
+      "This section is intentionally left as a placeholder until real testimonials are provided.",
+      "Suggested sources include managers, collaborators, or clients from ArifPay, Andrew Williams Solicitors, Atlas Computer Technologies, or RouteForge-related work.",
+      "Once real quotes are available, this panel can show longer testimonial content without changing the section layout.",
     ],
   },
   {
     id: "02.",
-    name: "Chris Azzopardi",
-    role: "Chief Product Officer",
+    name: "Reference Placeholder",
+    role: "Client or team lead quote",
     image: avatar2,
     preview:
-      "I had the pleasure of working closely with Tselot. Throughout our time together, I was consistently impressed by her exceptional design skills, strategic thinking, and unwavering...",
+      "Reserved for a short endorsement about backend development, DevOps, or platform reliability.",
     full: [
-      "I had the pleasure of working closely with Tselot.",
-      "Throughout our time together, I was consistently impressed by her exceptional design skills, strategic thinking, and unwavering attention to quality. Tselot has a rare ability to combine strong visual taste with clear product thinking.",
-      "She consistently brought calm, clarity, and depth to complex product conversations, and her design work elevated the standard of the entire team.",
+      "Use this space for a concise quote about technical ownership, collaboration, or engineering execution.",
+      "The detailed view is ready for a multi-paragraph testimonial when you want to publish one.",
     ],
   },
   {
     id: "03.",
-    name: "Silvano D'Orazio",
-    role: "Group Head of User Experience and Brand",
+    name: "Project Endorsement Placeholder",
+    role: "Delivery or technical leadership quote",
     image: avatar3,
     preview:
-      "I had the distinct pleasure of working closely with Tselot over the past few years. ...",
+      "Reserved for a project-specific quote that supports the portfolio once verified testimonials are available.",
     full: [
-      "I had the distinct pleasure of working closely with Tselot over the past few years.",
-      "She brought a thoughtful approach to design leadership, a sharp eye for systems, and a deep understanding of how brand and product should connect.",
-      "Tselot is the kind of designer who raises the level of everyone around her.",
+      "This placeholder avoids publishing invented testimonials while keeping the interaction design of the section intact.",
+      "When ready, replace it with a real quote tied to delivery quality, system reliability, or cross-functional teamwork.",
     ],
   },
 ];

@@ -16,6 +16,9 @@ function mapRange(value, inMin, inMax, outMin, outMax) {
 function ScrollScene({ heroHidden = false }) {
   const sceneRef = useRef(null);
   const [progress, setProgress] = useState(0);
+  const targetRef = useRef(0);
+  const currentRef = useRef(0);
+  const rafRef = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,17 +29,29 @@ function ScrollScene({ heroHidden = false }) {
       const total = el.offsetHeight - window.innerHeight;
       const scrolled = clamp(-rect.top, 0, total);
       const next = total > 0 ? scrolled / total : 0;
+      targetRef.current = next;
+    };
 
-      setProgress(next);
+    const tick = () => {
+      currentRef.current += (targetRef.current - currentRef.current) * 0.12;
+
+      if (Math.abs(targetRef.current - currentRef.current) < 0.0005) {
+        currentRef.current = targetRef.current;
+      }
+
+      setProgress(currentRef.current);
+      rafRef.current = requestAnimationFrame(tick);
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll);
+    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
+      cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
@@ -45,11 +60,13 @@ function ScrollScene({ heroHidden = false }) {
     const heroY = mapRange(progress, 0.12, 0.38, 0, -120);
 
     const imageScale = mapRange(progress, 0, 0.82, 1, 2.5);
-    const imageX = 0;
+    const imageX = mapRange(progress, 0.34, 0.9, 0, 520);
     const imageY = -280;
 
-    const introOpacity = mapRange(progress, 0.28, 0.46, 0, 1);
-    const introY = mapRange(progress, 0.28, 0.46, 80, 0);
+    const introEnterOpacity = mapRange(progress, 0.28, 0.46, 0, 1);
+    const introExitOpacity = 1 - mapRange(progress, 0.78, 0.96, 0, 1);
+    const introOpacity = introEnterOpacity * introExitOpacity;
+    const introY = mapRange(progress, 0.28, 1, 80, -260);
 
     const imageDimOpacity = mapRange(progress, 0.42, 0.72, 0.08, 0.82);
     const blackStageOpacity = mapRange(progress, 0.44, 0.72, 0, 0.9);
@@ -91,17 +108,17 @@ function ScrollScene({ heroHidden = false }) {
         <div className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_63%_18%,rgba(255,91,32,0.18),transparent_18%),radial-gradient(circle_at_61%_50%,rgba(255,35,0,0.06),transparent_24%)]" />
 
         <div
-          className="absolute inset-0 z-[3] bg-[rgba(5,5,5,0.78)] transition-opacity duration-300"
+          className="absolute inset-0 z-[3] bg-[rgba(5,5,5,0.78)]"
           style={{ opacity: styles.imageDimOpacity }}
         />
 
         <div
-          className="absolute inset-0 z-[4] bg-[#050505] transition-opacity duration-300"
+          className="absolute inset-0 z-[4] bg-[#050505]"
           style={{ opacity: styles.blackStageOpacity }}
         />
 
         <div
-          className="absolute inset-0 z-10 transition-[opacity,transform] duration-300"
+          className="absolute inset-0 z-10"
           style={{
             opacity: styles.heroOpacity,
             transform: `translateY(${styles.heroY}px)`,
@@ -119,7 +136,7 @@ function ScrollScene({ heroHidden = false }) {
         </div>
 
         <div
-          className="absolute inset-0 z-20 transition-[opacity,transform] duration-300"
+          className="absolute inset-0 z-20"
           style={{
             opacity: styles.introOpacity,
             transform: `translateY(${styles.introY}px)`,
