@@ -10,9 +10,9 @@ export default function ProjectPage({
   if (!project) return null;
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white">
+    <main className="min-h-screen bg-[var(--color-bg-deep)] text-white">
       <section className="relative overflow-hidden px-6 pb-16 pt-28 md:px-10 lg:px-14">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_18%,rgba(255,91,32,0.08),transparent_22%),radial-gradient(circle_at_center,rgba(255,255,255,0.015),transparent_58%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_18%,var(--color-glow-primary),transparent_22%),radial-gradient(circle_at_center,rgba(255,255,255,0.015),transparent_58%)]" />
 
         <div className="relative z-10">
           <button
@@ -89,7 +89,7 @@ export default function ProjectPage({
                   href={project.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[0.95rem] font-medium text-black transition hover:bg-[#ff5a1f] hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[0.95rem] font-medium text-black transition hover:bg-[var(--color-accent)] hover:text-white"
                 >
                   Visit live project <span>↗</span>
                 </a>

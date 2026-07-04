@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import ProjectVisual from "./ProjectVisual";
+import { useCursorTarget } from "../context/CursorContext";
 import { projects } from "../data/projects";
 
 function clamp(value, min = 0, max = 1) {
@@ -19,23 +20,6 @@ function easeInOutCubic(t) {
   return t < 0.5
     ? 4 * t * t * t
     : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
-
-function OpenCursor({ visible, x, y }) {
-  return (
-    <div
-      className="pointer-events-none fixed left-0 top-0 z-[100] hidden lg:block"
-      style={{
-        transform: `translate3d(${x - 44}px, ${y - 44}px, 0)`,
-        opacity: visible ? 1 : 0,
-        transition: "opacity 120ms ease",
-      }}
-    >
-      <div className="flex h-[88px] w-[88px] items-center justify-center rounded-full bg-[#ff5a0a] text-[1.05rem] font-medium text-white shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
-        Open
-      </div>
-    </div>
-  );
 }
 
 function getSequence(progress) {
@@ -68,8 +52,7 @@ function ThumbnailRail({
   activeIndex,
   progress,
   onOpenProject,
-  setCursorVisible,
-  setCursorPos,
+  cursorTarget,
 }) {
   const { fromIndex, toIndex, localT, isTransitioning } = getSequence(progress);
   const currentProject = projects[fromIndex];
@@ -84,10 +67,8 @@ function ThumbnailRail({
         <button
           type="button"
           onClick={() => onOpenProject(displayProject.slug)}
-          onMouseEnter={() => setCursorVisible(true)}
-          onMouseLeave={() => setCursorVisible(false)}
-          onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
-          className="relative h-[4.8rem] w-[3.7rem] overflow-hidden border border-[#ff5a0a] transition-all duration-500"
+          {...cursorTarget}
+          className="relative h-[4.8rem] w-[3.7rem] overflow-hidden border border-[var(--color-accent)] transition-all duration-500"
         >
           {isTransitioning ? (
             <>
@@ -124,7 +105,7 @@ function ThumbnailRail({
             <ProjectVisual project={displayProject} compact />
           )}
         </button>
-        <div className="mt-[0.35rem] h-[3px] w-[3.7rem] bg-[#ff5a0a]" />
+        <div className="mt-[0.35rem] h-[3px] w-[3.7rem] bg-[var(--color-accent)]" />
         <div className="mt-6 text-[1.1rem] tracking-[-0.04em] text-white/92">
           <span>{displayProject.id}</span>
           <span className="mx-2 text-white/28">/</span>
@@ -166,24 +147,13 @@ function IntroOverlay({ progress }) {
           <span className="text-[4rem] font-semibold leading-none tracking-[-0.08em] text-white/16 md:text-[6rem] lg:text-[7.8rem]">
             16-25
           </span>
-          <span className="mt-1 text-[1.7rem] font-semibold text-[#ff5a0a] md:text-[2.4rem]">
+          <span className="mt-1 text-[1.7rem] font-semibold text-[var(--color-accent)] md:text-[2.4rem]">
             ®
           </span>
         </div>
       </div>
 
-      <div className="absolute left-[22%] top-[45%] h-3 w-3 rounded-full bg-[#ff5a0a]" />
-    </div>
-  );
-}
-
-function MotionImage({ project, style, zIndex = 1 }) {
-  return (
-    <div
-      className="absolute left-1/2 top-1/2 overflow-hidden"
-      style={{ ...style, zIndex }}
-    >
-      <ProjectVisual project={project} />
+      <div className="absolute left-[22%] top-[45%] h-3 w-3 rounded-full bg-[var(--color-accent)]" />
     </div>
   );
 }
@@ -191,39 +161,34 @@ function MotionImage({ project, style, zIndex = 1 }) {
 function CenterVisual({
   progress,
   onOpenProject,
-  setCursorVisible,
-  setCursorPos,
+  cursorTarget,
 }) {
   const { reveal, fromIndex, toIndex, localT, isTransitioning } =
     getSequence(progress);
 
   const current = projects[fromIndex];
   const next = projects[toIndex];
-  const previous = fromIndex > 0 ? projects[fromIndex - 1] : null;
 
   const centerW = 460;
   const centerH = 620;
-
-  const upperRightW = 165;
-  const upperRightH = 225;
-
-  const lowerLeftW = 165;
-  const lowerLeftH = 225;
-
-  const bottomRightW = 165;
-  const bottomRightH = 225;
+  const sideW = 220;
+  const sideH = 300;
 
   const centerX = 20;
-  const centerY = 95;
+  const centerY = 80;
 
-  const upperLeftX = -275;
-  const upperLeftY = -195;
+  // Outgoing fully leaves, but stays close to the incoming card on the way out.
+  const exitX = -620;
+  const exitY = -480;
 
-  const lowerRightX = 235;
-  const lowerRightY = 185;
+  // Incoming starts just beside the main card (not far off-screen).
+  const enterX = 210;
+  const enterY = 170;
 
-  const bottomRightX = 235;
-  const bottomRightY = 185;
+  // Incoming settles into center early so the middle never goes empty.
+  const inT = clamp(localT / 0.62);
+  // Outgoing keeps moving until it is fully gone.
+  const outT = localT;
 
   const containerY = lerp(30, 0, reveal);
 
@@ -235,74 +200,73 @@ function CenterVisual({
   };
 
   const outgoingStyle = {
-    width: `${lerp(centerW, upperRightW, localT)}px`,
-    height: `${lerp(centerH, upperRightH, localT)}px`,
+    width: `${lerp(centerW, sideW, outT)}px`,
+    height: `${lerp(centerH, sideH, outT)}px`,
     transform: `translate3d(calc(-50% + ${lerp(
       centerX,
-      upperLeftX,
-      localT
-    )}px), calc(-50% + ${lerp(centerY, upperLeftY, localT)}px + ${containerY}px), 0)`,
-    opacity: lerp(reveal, 0.96, localT),
+      exitX,
+      outT
+    )}px), calc(-50% + ${lerp(centerY, exitY, outT)}px + ${containerY}px), 0) scale(${lerp(
+      1,
+      0.88,
+      outT
+    )})`,
+    opacity: lerp(reveal, 0, outT),
   };
 
   const incomingStyle = {
-    width: `${lerp(lowerLeftW, centerW, localT)}px`,
-    height: `${lerp(lowerLeftH, centerH, localT)}px`,
+    width: `${lerp(sideW, centerW, inT)}px`,
+    height: `${lerp(sideH, centerH, inT)}px`,
     transform: `translate3d(calc(-50% + ${lerp(
-      lowerRightX,
+      enterX,
       centerX,
-      localT
-    )}px), calc(-50% + ${lerp(lowerRightY, centerY, localT)}px + ${containerY}px), 0)`,
-    opacity: localT <= 0 ? 0 : lerp(0, reveal, localT),
-  };
-
-  const parkedUpperRightStyle = {
-    width: `${upperRightW}px`,
-    height: `${upperRightH}px`,
-    transform: `translate3d(calc(-50% + ${upperLeftX}px), calc(-50% + ${upperLeftY}px + ${containerY}px), 0)`,
-    opacity: reveal,
+      inT
+    )}px), calc(-50% + ${lerp(enterY, centerY, inT)}px + ${containerY}px), 0)`,
+    opacity: inT <= 0 ? 0 : lerp(0.55, reveal, inT),
   };
 
   return (
-    <div className="absolute inset-0 z-20 hidden lg:block">
-      <div className="absolute left-1/2 top-1/2 h-[760px] w-[900px] -translate-x-1/2 -translate-y-1/2">
+    <div className="absolute inset-0 z-20 hidden overflow-hidden lg:block">
+      <div className="absolute left-1/2 top-1/2 h-screen w-screen -translate-x-1/2 -translate-y-1/2">
         {isTransitioning && localT > 0 && localT < 1 ? (
           <>
-            <MotionImage project={current} style={outgoingStyle} zIndex={4} />
-            <MotionImage project={next} style={incomingStyle} zIndex={3} />
-          </>
-        ) : (
-          <>
-            {fromIndex > 0 && fromIndex < projects.length - 1 && previous && (
-              <MotionImage
-                project={previous}
-                style={parkedUpperRightStyle}
-                zIndex={2}
-              />
-            )}
-
             <button
               type="button"
               onClick={() => onOpenProject(current.slug)}
-              onMouseEnter={() => setCursorVisible(true)}
-              onMouseLeave={() => setCursorVisible(false)}
-              onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
+              {...cursorTarget}
               className="absolute left-1/2 top-1/2 overflow-hidden text-left"
-              style={{ ...centerStyle, zIndex: 3 }}
+              style={{ ...outgoingStyle, zIndex: 4 }}
             >
               <ProjectVisual project={current} />
             </button>
+            <button
+              type="button"
+              onClick={() => onOpenProject(next.slug)}
+              {...cursorTarget}
+              className="absolute left-1/2 top-1/2 overflow-hidden text-left"
+              style={{ ...incomingStyle, zIndex: 3 }}
+            >
+              <ProjectVisual project={next} />
+            </button>
           </>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onOpenProject(current.slug)}
+            {...cursorTarget}
+            className="absolute left-1/2 top-1/2 overflow-hidden text-left"
+            style={{ ...centerStyle, zIndex: 3 }}
+          >
+            <ProjectVisual project={current} />
+          </button>
         )}
 
         {fromIndex === projects.length - 1 && (
           <button
             type="button"
             onClick={() => onOpenProject(current.slug)}
-            onMouseEnter={() => setCursorVisible(true)}
-            onMouseLeave={() => setCursorVisible(false)}
-            onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
-            className="absolute left-1/2 top-1/2 flex h-[5.4rem] w-[5.4rem] items-center justify-center rounded-full bg-[#ff5a0a] text-[1.1rem] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
+            {...cursorTarget}
+            className="absolute left-1/2 top-1/2 flex h-[5.4rem] w-[5.4rem] items-center justify-center rounded-full bg-[var(--color-accent)] text-[1.1rem] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
             style={{
               opacity: clamp(mapRange(progress, 0.72, 0.88, 0, 1)),
               transform: `translate3d(-50%, -50%, 0) scale(${lerp(
@@ -352,8 +316,7 @@ function RightMeta({
   activeIndex,
   progress,
   onOpenProject,
-  setCursorVisible,
-  setCursorPos,
+  cursorTarget,
 }) {
   const project = projects[activeIndex];
   const opacity = clamp(mapRange(progress, 0.16, 0.24, 0, 1));
@@ -388,10 +351,8 @@ function RightMeta({
         <button
           type="button"
           onClick={() => onOpenProject(project.slug)}
-          onMouseEnter={() => setCursorVisible(true)}
-          onMouseLeave={() => setCursorVisible(false)}
-          onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
-          className="inline-flex items-center gap-2 pt-2 text-[1.05rem] font-medium text-[#ff5a0a] underline underline-offset-4"
+          {...cursorTarget}
+          className="inline-flex items-center gap-2 pt-2 text-[1.05rem] font-medium text-[var(--color-accent)] underline underline-offset-4"
         >
           View project <span>↗</span>
         </button>
@@ -403,8 +364,7 @@ function RightMeta({
 export default function ProjectsSection({ onOpenProject }) {
   const sectionRef = useRef(null);
   const [progress, setProgress] = useState(0);
-  const [cursorVisible, setCursorVisible] = useState(false);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const cursorTarget = useCursorTarget("Open");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -435,16 +395,10 @@ export default function ProjectsSection({ onOpenProject }) {
   return (
     <section
       ref={sectionRef}
-      onMouseMove={(e) => {
-        if (cursorVisible) {
-          setCursorPos({ x: e.clientX, y: e.clientY });
-        }
-      }}
-      className="relative h-[430vh] bg-[#020202] text-white"
+      className="relative h-[430vh] bg-[var(--color-bg-deep)] text-white"
     >
-      <OpenCursor visible={cursorVisible} x={cursorPos.x} y={cursorPos.y} />
-      <div className="sticky top-0 h-screen overflow-hidden bg-[#020202]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(120,18,10,0.12)_0%,rgba(120,18,10,0.03)_28%,rgba(0,0,0,0)_60%)]" />
+      <div className="sticky top-0 h-screen overflow-hidden bg-[var(--color-bg-deep)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-glow-warm)_0%,rgba(6,95,70,0.03)_28%,rgba(0,0,0,0)_60%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:120px_100%] opacity-[0.04]" />
 
         <IntroOverlay progress={progress} />
@@ -452,22 +406,19 @@ export default function ProjectsSection({ onOpenProject }) {
           activeIndex={activeIndex}
           progress={progress}
           onOpenProject={onOpenProject}
-          setCursorVisible={setCursorVisible}
-          setCursorPos={setCursorPos}
+          cursorTarget={cursorTarget}
         />
         <CenterVisual
           progress={progress}
           onOpenProject={onOpenProject}
-          setCursorVisible={setCursorVisible}
-          setCursorPos={setCursorPos}
+          cursorTarget={cursorTarget}
         />
         <LeftBottomTitle activeIndex={activeIndex} progress={progress} />
         <RightMeta
           activeIndex={activeIndex}
           progress={progress}
           onOpenProject={onOpenProject}
-          setCursorVisible={setCursorVisible}
-          setCursorPos={setCursorPos}
+          cursorTarget={cursorTarget}
         />
 
         <div className="absolute bottom-8 left-6 right-6 z-40 lg:hidden">

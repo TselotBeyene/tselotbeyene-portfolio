@@ -55,7 +55,7 @@ function Navbar({ onNavigateHome, onNavigateProjects, isProjectPage = false }) {
         </button>
         <a
           href="mailto:tselotbeyene70@gmail.com"
-          className="ml-2 text-white underline underline-offset-4 transition-colors hover:text-[#ff5a1f]"
+          className="ml-2 text-white underline underline-offset-4 transition-colors hover:text-[var(--color-accent-bright)]"
         >
           Let&apos;s talk!
         </a>

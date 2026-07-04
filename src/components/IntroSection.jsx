@@ -42,15 +42,32 @@ function LogoTile({ children, muted = false }) {
   );
 }
 
+function getWordStyles(index, activeWordIndex) {
+  // Read words (and the active word) stay full white and sharp.
+  if (index <= activeWordIndex) {
+    return { opacity: 1, blur: 0 };
+  }
+
+  // Upcoming words stay dim and blurred until they are read.
+  const distance = index - activeWordIndex;
+  if (distance === 1) {
+    return { opacity: 0.38, blur: 4 };
+  }
+  if (distance === 2) {
+    return { opacity: 0.28, blur: 6 };
+  }
+
+  return { opacity: 0.2, blur: 8 };
+}
+
 function IntroSection({ progress = 0 }) {
-    // const introReadingPhase = mapRange(progress, 0, 0.78, 0, 1);
-    const introReadingPhase = mapRange(progress, 0, 0.7, 0, 1);
+    // Reveal words across the full reading window, slowly.
+    const introReadingPhase = mapRange(progress, 0, 1, 0, 1);
     const activeWordIndex = Math.floor(introReadingPhase * (introWords.length - 1));
-  
-    // Left rail scrolls steadily through the whole section.
-    const leftY = mapRange(progress, 0, 1, 0, -760);
-    // Right side starts moving earlier so it doesn't feel parked.
-    const rightY = mapRange(progress, 0.18, 1, 0, -1700);
+
+    // Keep text mostly still while reading; only drift up after most words are revealed.
+    const leftY = mapRange(progress, 0.72, 1, 0, -220);
+    const rightY = mapRange(progress, 0.78, 1, 0, -280);
   
     const fadeMask = "linear-gradient(to bottom, transparent 0px, black 20px)";
   
@@ -121,20 +138,18 @@ function IntroSection({ progress = 0 }) {
               {/* INTRO */}
               <div className="mb-28 ">
                 <p className="mb-8 text-[1.1rem] text-white/42">(Intro)</p>
-                <div className="flex flex-wrap gap-x-[0.3em] gap-y-[0.15em] text-[1.5rem] leading-[1.2] tracking-[-0.05em] md:text-[2.5rem]">
+                <div className="relative flex flex-wrap gap-x-[0.3em] gap-y-[0.15em] text-[1.5rem] leading-[1.2] tracking-[-0.05em] text-white md:text-[2.5rem]">
                   {introWords.map((word, index) => {
-                    let opacity;
-                    if (index < activeWordIndex - 1) opacity = "opacity-[0.18]";
-                    else if (index === activeWordIndex - 1) opacity = "opacity-[0.72]";
-                    else if (index === activeWordIndex) opacity = "opacity-100";
-                    else if (index === activeWordIndex + 1) opacity = "opacity-[0.42]";
-                    else opacity = "opacity-[0.14]";
+                    const { opacity, blur } = getWordStyles(index, activeWordIndex);
+
                     return (
                       <span
                         key={index}
-                        className={`inline-block ${opacity} ${
-                          index === activeWordIndex ? "scale-[1.02]" : "scale-[1]"
-                        }`}
+                        className="inline-block transition-[opacity,filter] duration-300 ease-out"
+                        style={{
+                          opacity,
+                          filter: blur > 0 ? `blur(${blur}px)` : "none",
+                        }}
                       >
                         {word}
                       </span>
@@ -145,7 +160,7 @@ function IntroSection({ progress = 0 }) {
   
               {/* MIDDLE IMAGE */}
               <div className="mb-32 flex justify-end">
-                <div className="w-[13rem] overflow-hidden bg-white/[0.03] md:w-[15rem]">
+                <div className="w-[8.5rem] overflow-hidden bg-white/[0.03] md:w-[10rem]">
                   <img
                     src={secondImage}
                     alt="Editorial portrait"

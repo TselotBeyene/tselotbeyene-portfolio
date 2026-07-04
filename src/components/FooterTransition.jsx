@@ -105,7 +105,7 @@ export default function FooterTransition({
   const introProgress = Math.min(progress, 0.85);
   const imageProgress = Math.max(0, progress - BLACK_POINT);
 
-  const orangeText = progress > 7.8 ? "#ea580c" : "#000000";
+  const accentText = progress > 7.8 ? "#10b981" : "#000000";
 
   const firstProminenceT = Math.min(1, imageProgress / 0.3);
   const firstExitT = clamp01((imageProgress - 0.14) / 0.38);
@@ -125,12 +125,13 @@ export default function FooterTransition({
 
   return (
     <section
+      id="site-footer"
       onWheel={handleWheel}
       className="relative h-screen bg-black overflow-hidden"
     >
       {/* BACKGROUND */}
       <div
-        className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_110%_75%_at_50%_-15%,rgba(5,8,11,0.95)_0%,rgba(5,8,11,0.85)_35%,rgba(5,8,11,0.4)_55%,rgba(5,8,11,0)_70%),linear-gradient(to_bottom,#0b0f12_0%,#1a0c08_20%,#4a160c_35%,#e34813_55%,#f58b3a_72%,#fff7ef_100%)]"
+        className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_110%_75%_at_50%_-15%,rgba(4,8,6,0.95)_0%,rgba(4,8,6,0.85)_35%,rgba(4,8,6,0.4)_55%,rgba(4,8,6,0)_70%),linear-gradient(to_bottom,#040806_0%,#081210_20%,#0f2922_35%,#047857_55%,#10b981_72%,#a7f3d0_88%,#ecfdf5_100%)]"
         style={{
           transform: `translateY(${Math.min(introProgress * 220, 100)}%)`,
         }}
@@ -143,16 +144,16 @@ export default function FooterTransition({
         <div className="absolute left-10 top-[20vh] space-y-16 text-sm">
           <div>
             <h3 className="mb-3 font-bold">Profiles</h3>
-            <p style={{ color: orangeText }} className="font-semibold">GitHub</p>
-            <p style={{ color: orangeText }} className="font-semibold">Email</p>
+            <p style={{ color: accentText }} className="font-semibold">GitHub</p>
+            <p style={{ color: accentText }} className="font-semibold">Email</p>
           </div>
 
           <div>
             <h3 className="mb-3 font-bold">Contact me</h3>
-            <p style={{ color: orangeText }} className="font-semibold">
+            <p style={{ color: accentText }} className="font-semibold">
               tselotbeyene70@gmail.com
             </p>
-            <p style={{ color: orangeText }} className="font-semibold">
+            <p style={{ color: accentText }} className="font-semibold">
               +251 936 679 199
             </p>
           </div>
@@ -183,11 +184,11 @@ export default function FooterTransition({
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 overflow-hidden">
           <div className="w-max whitespace-nowrap animate-[footerMarquee_18s_linear_infinite] text-[3.5rem] font-medium leading-none tracking-[-0.06em] text-black/95 md:text-[4.5rem] lg:text-[6.5rem]">
             <span className="mr-10">hello</span>
-            <span style={{ color: orangeText }} className="mr-10">@</span>
+            <span style={{ color: accentText }} className="mr-10">@</span>
             <span className="mr-16">tselotbeyene.com</span>
 
             <span className="mr-10">hello</span>
-            <span style={{ color: orangeText }} className="mr-10">@</span>
+            <span style={{ color: accentText }} className="mr-10">@</span>
             <span className="mr-16">tselotbeyene.com</span>
           </div>
         </div>

@@ -18,7 +18,7 @@ function HeroLeft() {
           <div className="text-[17vw] font-black uppercase sm:text-[15vw] lg:text-[7.1vw]">
             Software
           </div>
-          <div className="text-[16vw] font-black uppercase text-[#ff5a1f] sm:text-[14vw] lg:text-[6.8vw]">
+          <div className="text-[16vw] font-black uppercase text-[var(--color-accent)] sm:text-[14vw] lg:text-[6.8vw]">
             Developer
           </div>
         </div>

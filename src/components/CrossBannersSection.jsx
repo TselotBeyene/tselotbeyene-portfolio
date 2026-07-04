@@ -42,12 +42,12 @@ function BannerRow({ items, reverse = false }) {
   
   export default function CrossBannerSection() {
     return (
-      <section className="relative h-[90vh] overflow-hidden bg-[#050505]">
-        {/* RED GLOW BACKGROUND */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(120,20,10,0.45)_0%,rgba(120,20,10,0.18)_25%,transparent_60%)] blur-2xl" />
-  
-        {/* TOP ORANGE STRIP */}
-        <div className="absolute top-[45%] left-1/2 z-20 h-[120px] w-[200vw] -translate-x-1/2 -translate-y-1/2 rotate-[8deg] overflow-hidden bg-[#ff4d0a] shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+      <section className="relative h-[90vh] overflow-hidden bg-[var(--color-bg-deep)]">
+        {/* COPPER GLOW BACKGROUND */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-glow-warm)_0%,rgba(6,95,70,0.18)_25%,transparent_60%)] blur-2xl" />
+
+        {/* TOP COPPER STRIP */}
+        <div className="absolute top-[45%] left-1/2 z-20 h-[120px] w-[200vw] -translate-x-1/2 -translate-y-1/2 rotate-[8deg] overflow-hidden bg-[var(--color-accent)] shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
           <BannerRow items={topItems} />
         </div>
   

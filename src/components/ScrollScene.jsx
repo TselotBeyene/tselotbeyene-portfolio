@@ -63,14 +63,18 @@ function ScrollScene({ heroHidden = false }) {
     const imageX = mapRange(progress, 0.34, 0.9, 0, 520);
     const imageY = -280;
 
-    const introEnterOpacity = mapRange(progress, 0.28, 0.46, 0, 1);
-    const introExitOpacity = 1 - mapRange(progress, 0.78, 0.96, 0, 1);
+    const introEnterOpacity = mapRange(progress, 0.2, 0.32, 0, 1);
+    const introExitOpacity = 1 - mapRange(progress, 0.92, 0.99, 0, 1);
     const introOpacity = introEnterOpacity * introExitOpacity;
-    const introY = mapRange(progress, 0.28, 1, 80, -260);
+    // Enter from below, then stay put while reading, only exit near the end.
+    const introEnterY = mapRange(progress, 0.2, 0.32, 70, 0);
+    const introExitY = mapRange(progress, 0.9, 1, 0, -160);
+    const introY = introEnterY + introExitY;
 
-    const imageDimOpacity = mapRange(progress, 0.42, 0.72, 0.08, 0.82);
-    const blackStageOpacity = mapRange(progress, 0.44, 0.72, 0, 0.9);
-    const readingProgress = mapRange(progress, 0.42, 1, 0, 1);
+    const imageDimOpacity = mapRange(progress, 0.3, 0.62, 0.08, 0.82);
+    const blackStageOpacity = mapRange(progress, 0.32, 0.62, 0, 0.9);
+    // Long reading window so each word has enough scroll distance.
+    const readingProgress = mapRange(progress, 0.3, 0.9, 0, 1);
 
     return {
       heroOpacity,
@@ -87,9 +91,9 @@ function ScrollScene({ heroHidden = false }) {
   }, [progress]);
 
   return (
-    <section ref={sceneRef} className="relative h-[760vh] bg-[#070707]">
-      <div className="sticky top-0 h-screen overflow-hidden bg-[#070707]">
-        <div className="absolute inset-0 z-0 bg-[#070707]" />
+    <section ref={sceneRef} className="relative h-[1000vh] bg-[var(--color-bg-base)]">
+      <div className="sticky top-0 h-screen overflow-hidden bg-[var(--color-bg-base)]">
+        <div className="absolute inset-0 z-0 bg-[var(--color-bg-base)]" />
 
         <div
           className="absolute inset-0 z-[1] overflow-hidden"
@@ -105,7 +109,7 @@ function ScrollScene({ heroHidden = false }) {
 
         <div className="absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(5,5,5,0.95)_0%,rgba(5,5,5,0.72)_16%,rgba(5,5,5,0.10)_44%,rgba(5,5,5,0.20)_60%,rgba(5,5,5,0.58)_78%,rgba(5,5,5,0.92)_100%)]" />
 
-        <div className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_63%_18%,rgba(255,91,32,0.18),transparent_18%),radial-gradient(circle_at_61%_50%,rgba(255,35,0,0.06),transparent_24%)]" />
+        <div className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_63%_18%,var(--color-glow-primary),transparent_18%),radial-gradient(circle_at_61%_50%,var(--color-glow-secondary),transparent_24%)]" />
 
         <div
           className="absolute inset-0 z-[3] bg-[rgba(5,5,5,0.78)]"
@@ -113,7 +117,7 @@ function ScrollScene({ heroHidden = false }) {
         />
 
         <div
-          className="absolute inset-0 z-[4] bg-[#050505]"
+          className="absolute inset-0 z-[4] bg-[var(--color-bg-deep)]"
           style={{ opacity: styles.blackStageOpacity }}
         />
 
@@ -129,7 +133,7 @@ function ScrollScene({ heroHidden = false }) {
               <HeroLeft />
             </div>
 
-            <div className="w-[31%] max-w-[430px] border-white/10">
+            <div className="ml-auto w-[28%] min-w-[300px] max-w-[430px] pl-0 pr-8 lg:pr-14">
               <HeroRight />
             </div>
           </div>

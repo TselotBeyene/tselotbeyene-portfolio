@@ -106,7 +106,7 @@ export default function PortraitHandoff({
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-[9999] bg-[#070707]"
+      className="pointer-events-none fixed inset-0 z-[9999] bg-[var(--color-bg-base)]"
       style={{
         opacity: isCrossfading ? 0 : 1,
         transition: reducedMotion ? "none" : `opacity ${FADE_MS}ms ease-in-out`,
@@ -115,7 +115,7 @@ export default function PortraitHandoff({
       aria-live="polite"
     >
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.95)_0%,rgba(5,5,5,0.72)_16%,rgba(5,5,5,0.10)_44%,rgba(5,5,5,0.20)_60%,rgba(5,5,5,0.58)_78%,rgba(5,5,5,0.92)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_63%_18%,rgba(255,91,32,0.18),transparent_18%),radial-gradient(circle_at_61%_50%,rgba(255,35,0,0.06),transparent_24%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_63%_18%,var(--color-glow-primary),transparent_18%),radial-gradient(circle_at_61%_50%,var(--color-glow-secondary),transparent_24%)]" />
 
       <img
         ref={cloneRef}

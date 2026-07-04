@@ -56,7 +56,7 @@ import {
       >
         {/* BACKGROUND */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,#050505_0%,#120404_18%,#4e0f0b_34%,#8a1d0f_48%,#cf4a14_62%,#f58522_76%,#f4c98f_88%,#f5eee7_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,#040806_0%,#081210_18%,#0f2922_34%,#065f46_48%,#059669_62%,#10b981_76%,#a7f3d0_88%,#ecfdf5_100%)]" />
   
           <div
             className="absolute left-1/2 top-[-34%] h-[72vh] w-[145%] -translate-x-1/2 blur-[26px]"
@@ -84,8 +84,8 @@ import {
               <div className="mb-10">
                 <p className="mb-3 text-[14px] font-medium text-black">Profiles</p>
                 <ul className="space-y-1 text-[14px]">
-                  <li className="cursor-pointer text-[#ff4d00]">GitHub</li>
-                  <li className="cursor-pointer text-[#ff4d00]">Email</li>
+                  <li className="cursor-pointer text-[var(--color-accent)]">GitHub</li>
+                  <li className="cursor-pointer text-[var(--color-accent)]">Email</li>
                 </ul>
               </div>
   
@@ -94,8 +94,8 @@ import {
                   Contact me
                 </p>
                 <ul className="space-y-1 text-[14px]">
-                  <li className="cursor-pointer text-[#ff4d00]">tselotbeyene70@gmail.com</li>
-                  <li className="cursor-pointer text-[#ff4d00]">+251 936 679 199</li>
+                  <li className="cursor-pointer text-[var(--color-accent)]">tselotbeyene70@gmail.com</li>
+                  <li className="cursor-pointer text-[var(--color-accent)]">+251 936 679 199</li>
                 </ul>
               </div>
             </div>
@@ -182,11 +182,11 @@ import {
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-30 overflow-hidden">
           <div className="w-max whitespace-nowrap animate-[footerMarquee_18s_linear_infinite] text-[8rem] font-medium leading-none tracking-[-0.08em] text-black/95 md:text-[10rem] lg:text-[12rem]">
             <span className="mr-10">hello</span>
-            <span className="mr-10 text-[#ff4d00]">@</span>
+            <span className="mr-10 text-[var(--color-accent)]">@</span>
             <span className="mr-16">tselotbeyene.com</span>
   
             <span className="mr-10">hello</span>
-            <span className="mr-10 text-[#ff4d00]">@</span>
+            <span className="mr-10 text-[var(--color-accent)]">@</span>
             <span className="mr-16">tselotbeyene.com</span>
           </div>
         </div>

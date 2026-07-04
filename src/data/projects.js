@@ -9,9 +9,18 @@ export const projects = [
       "Developed and maintained the main web platforms and client-facing services for a UK immigration law firm.",
     link: "https://www.awsolicitors.co.uk",
     accent: "#c28f45",
-    surface: "linear-gradient(180deg, #1a1d22 0%, #111317 100%)",
+    surface: "linear-gradient(180deg, #17140f 0%, #0d0b09 100%)",
     eyebrow: "Legal Services",
     lines: ["Immigration", "Case flows", "Consultation"],
+    visual: "legal",
+    mockup: {
+      brand: "AWS",
+      headline: "Immigration support, clearly guided",
+      subhead: "Book a consultation and explore services online.",
+      panels: ["Visas", "Appeals", "Family"],
+      metric: "Client portal",
+      status: "Live site",
+    },
     summary:
       "A legal-services website and client-facing platform focused on trust, clarity, and structured service discovery for immigration support.",
     bullets: [
@@ -31,9 +40,21 @@ export const projects = [
       "Built features for a cloud-based SaaS compliance platform that automates case and document workflows for immigration professionals.",
     link: "https://www.ibiab-compliance.co.uk/landing",
     accent: "#7c8cff",
-    surface: "linear-gradient(180deg, #111827 0%, #0a0f1a 100%)",
+    surface: "linear-gradient(180deg, #0d1220 0%, #080b14 100%)",
     eyebrow: "Compliance SaaS",
     lines: ["Cases", "Documents", "Automation"],
+    visual: "saas",
+    mockup: {
+      brand: "IBIAB",
+      headline: "Case & document workflows",
+      rows: [
+        { label: "Case #1842", state: "In review" },
+        { label: "Docs package", state: "Ready" },
+        { label: "Compliance check", state: "Queued" },
+      ],
+      metric: "Automation",
+      status: "SaaS platform",
+    },
     summary:
       "A cloud-based compliance platform designed to automate document handling and workflow management for immigration professionals.",
     bullets: [
@@ -52,10 +73,18 @@ export const projects = [
     description:
       "Supported a web platform for social enterprise initiatives, working across front-end, back-end, and platform functionality.",
     link: "https://www.thesocialenterprisepound.com",
-    accent: "#ff6a1a",
-    surface: "linear-gradient(180deg, #171717 0%, #0d0d0d 100%)",
+    accent: "#10b981",
+    surface: "linear-gradient(180deg, #0c1410 0%, #070b08 100%)",
     eyebrow: "Impact Platform",
     lines: ["Community", "Commerce", "Social impact"],
+    visual: "impact",
+    mockup: {
+      brand: "SEP",
+      headline: "Social enterprise, online",
+      cards: ["Community", "Commerce", "Impact"],
+      metric: "Platform",
+      status: "Live product",
+    },
     summary:
       "A digital platform supporting social enterprise initiatives through clear storytelling, platform functionality, and community-facing web experiences.",
     bullets: [
@@ -75,9 +104,21 @@ export const projects = [
       "Manage Linux servers, CI/CD pipelines, containerized deployments, monitoring, and security controls for Ethiopia's first licensed payment gateway operator.",
     link: "https://arifpay.net",
     accent: "#16c47f",
-    surface: "linear-gradient(180deg, #071a12 0%, #04100b 100%)",
+    surface: "linear-gradient(180deg, #07140f 0%, #040a08 100%)",
     eyebrow: "Payments",
     lines: ["Gateway", "POS", "Infrastructure"],
+    visual: "payments",
+    mockup: {
+      brand: "ArifPay",
+      headline: "Payment infrastructure",
+      stats: [
+        { label: "Uptime", value: "99.9%" },
+        { label: "Deploys", value: "CI/CD" },
+        { label: "Nodes", value: "Linux" },
+      ],
+      metric: "Gateway ops",
+      status: "Production",
+    },
     summary:
       "A payment systems environment where infrastructure, deployment reliability, observability, and security are critical to everyday operation.",
     bullets: [
@@ -100,6 +141,14 @@ export const projects = [
     surface: "linear-gradient(180deg, #08111e 0%, #050b13 100%)",
     eyebrow: "Personal Project",
     lines: ["Camel routes", "Schemas", "Visualization"],
+    visual: "tooling",
+    mockup: {
+      brand: "RouteForge",
+      headline: "Camel routes & schemas",
+      routes: ["order-flow", "payment-sync", "notify-user"],
+      metric: "Integrations",
+      status: "Personal build",
+    },
     summary:
       "A personal exploration of full stack product building around Apache Camel integration workflows, route visibility, and schema-driven tooling.",
     bullets: [

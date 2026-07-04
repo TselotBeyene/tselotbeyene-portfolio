@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import avatar1 from "../assets/tselot.jpg";
 import avatar2 from "../assets/tselot_b.jpg";
 import avatar3 from "../assets/tselot3.jpg";
+import { useCursor, useCursorTarget } from "../context/CursorContext";
 
 const testimonials = [
   {
@@ -44,23 +45,6 @@ const testimonials = [
   },
 ];
 
-function ReadCursor({ visible, x, y }) {
-  return (
-    <div
-      className="pointer-events-none fixed left-0 top-0 z-[100] hidden lg:block"
-      style={{
-        transform: `translate3d(${x - 44}px, ${y - 44}px, 0)`,
-        opacity: visible ? 1 : 0,
-        transition: "opacity 180ms ease",
-      }}
-    >
-      <div className="flex h-[88px] w-[88px] items-center justify-center rounded-full bg-[#ff5a0a] text-[1.05rem] font-medium text-white shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
-        Read
-      </div>
-    </div>
-  );
-}
-
 function SectionHeading({ opened }) {
   return (
     <div
@@ -90,7 +74,7 @@ function SectionHeading({ opened }) {
   );
 }
 
-function TestimonialList({ onOpen, setCursorVisible, setCursorPos, opened }) {
+function TestimonialList({ onOpen, cursorTarget, opened }) {
   return (
     <div
       className="mt-14 px-6 pb-20 md:px-10 lg:px-14"
@@ -107,9 +91,7 @@ function TestimonialList({ onOpen, setCursorVisible, setCursorPos, opened }) {
             key={item.id}
             type="button"
             onClick={() => onOpen(item)}
-            onMouseEnter={() => setCursorVisible(true)}
-            onMouseLeave={() => setCursorVisible(false)}
-            onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}
+            {...cursorTarget}
             className="grid w-full grid-cols-1 gap-8 border-b border-white/10 py-10 text-left transition-colors duration-300 hover:text-white md:grid-cols-[0.18fr_0.18fr_0.9fr_1.2fr] md:items-center md:gap-10"
           >
             <div className="hidden text-[2.6rem] leading-none tracking-[-0.06em] text-white/22 md:block">
@@ -191,30 +173,27 @@ function TestimonialDetail({ item, onClose }) {
 
 export default function TestimonialsSection() {
   const [selected, setSelected] = useState(null);
-  const [cursorVisible, setCursorVisible] = useState(false);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const { clearLabel } = useCursor();
+  const cursorTarget = useCursorTarget("Read");
 
   useEffect(() => {
     if (selected) {
-      setCursorVisible(false);
+      clearLabel();
     }
-  }, [selected]);
+  }, [selected, clearLabel]);
 
   const opened = useMemo(() => Boolean(selected), [selected]);
 
   return (
-    <section className="relative min-h-screen bg-[#020202] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(120,18,10,0.08)_0%,rgba(120,18,10,0.02)_28%,rgba(0,0,0,0)_60%)]" />
+    <section className="relative min-h-screen bg-[var(--color-bg-deep)] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-glow-warm)_0%,rgba(6,95,70,0.02)_28%,rgba(0,0,0,0)_60%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:120px_100%] opacity-[0.04]" />
-
-      <ReadCursor visible={cursorVisible && !opened} x={cursorPos.x} y={cursorPos.y} />
 
       <SectionHeading opened={opened} />
 
       <TestimonialList
         onOpen={setSelected}
-        setCursorVisible={setCursorVisible}
-        setCursorPos={setCursorPos}
+        cursorTarget={opened ? {} : cursorTarget}
         opened={opened}
       />
 

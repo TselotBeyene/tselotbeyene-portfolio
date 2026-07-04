@@ -7,6 +7,8 @@ import TestimonialsSection from "./components/TestimonialSection";
 import FooterTransition from "./components/FooterTransition";
 import PortraitHandoff from "./components/PortraitHandoff";
 import ProjectPage from "./components/ProjectPage";
+import DotCursor from "./components/DotCursor";
+import { CursorProvider } from "./context/CursorContext";
 import useReducedMotion from "./hooks/useReducedMotion";
 import { getProjectBySlug, projects } from "./data/projects";
 
@@ -78,48 +80,76 @@ function App() {
       ? projects[currentProjectIndex + 1]
       : null;
 
+  // Scroll up on the first page loops to the footer (reverse of footer → hero).
+  useEffect(() => {
+    if (currentProject || handoffRect != null) return;
+
+    let locked = false;
+
+    const onWheel = (event) => {
+      if (locked || event.deltaY >= 0) return;
+      if (window.scrollY > 4) return;
+
+      const footer = document.getElementById("site-footer");
+      if (!footer) return;
+
+      event.preventDefault();
+      locked = true;
+      footer.scrollIntoView({ behavior: "instant", block: "start" });
+      window.setTimeout(() => {
+        locked = false;
+      }, 200);
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+  }, [currentProject, handoffRect]);
+
   return (
-    <div className="bg-[#070707] text-white">
-      <Navbar
-        onNavigateHome={() => navigateTo("/")}
-        onNavigateProjects={() => navigateTo("/")}
-        isProjectPage={Boolean(currentProject)}
-      />
-
-      {currentProject ? (
-        <ProjectPage
-          project={currentProject}
-          previousProject={previousProject}
-          nextProject={nextProject}
+    <CursorProvider>
+      <div className="bg-[var(--color-bg-base)] text-white">
+        <DotCursor />
+        <Navbar
           onNavigateHome={() => navigateTo("/")}
-          onNavigateProject={(slug) => navigateTo(`/projects/${slug}`)}
+          onNavigateProjects={() => navigateTo("/")}
+          isProjectPage={Boolean(currentProject)}
         />
-      ) : (
-        <>
-          <ScrollScene heroHidden={heroHidden} />
-          <CrossBannerSection />
-          <ProjectsSection
-            onOpenProject={(slug) => navigateTo(`/projects/${slug}`)}
-          />
-          <TestimonialsSection />
 
-          <FooterTransition
-            onLoopHandoff={handleLoopHandoff}
-            handoffActive={handoffRect != null}
+        {currentProject ? (
+          <ProjectPage
+            project={currentProject}
+            previousProject={previousProject}
+            nextProject={nextProject}
+            onNavigateHome={() => navigateTo("/")}
+            onNavigateProject={(slug) => navigateTo(`/projects/${slug}`)}
+          />
+        ) : (
+          <>
+            <ScrollScene heroHidden={heroHidden} />
+            <CrossBannerSection />
+            <ProjectsSection
+              onOpenProject={(slug) => navigateTo(`/projects/${slug}`)}
+            />
+            <TestimonialsSection />
+
+            <FooterTransition
+              onLoopHandoff={handleLoopHandoff}
+              handoffActive={handoffRect != null}
+              reducedMotion={reducedMotion}
+            />
+          </>
+        )}
+
+        {handoffRect && (
+          <PortraitHandoff
+            fromRect={handoffRect}
             reducedMotion={reducedMotion}
+            onArrive={handleHandoffArrive}
+            onComplete={handleHandoffComplete}
           />
-        </>
-      )}
-
-      {handoffRect && (
-        <PortraitHandoff
-          fromRect={handoffRect}
-          reducedMotion={reducedMotion}
-          onArrive={handleHandoffArrive}
-          onComplete={handleHandoffComplete}
-        />
-      )}
-    </div>
+        )}
+      </div>
+    </CursorProvider>
   );
 }
 

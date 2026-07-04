@@ -1,6 +1,6 @@
 function HeroRight() {
   return (
-    <aside className="flex h-full flex-col justify-between px-6 py-28 md:px-10 lg:px-12">
+    <aside className="flex h-full flex-col justify-between py-28 pl-0 pr-0">
       <div className="flex h-full flex-col justify-between">
         <div className="mt-30">
           <div className="mb-10">
@@ -14,7 +14,7 @@ function HeroRight() {
           <div className="border-t border-white/10 pt-6">
             <a
               href="mailto:tselotbeyene70@gmail.com"
-              className="inline-block text-white text-xl underline underline-offset-4 transition-colors hover:text-[#ff5a1f]"
+              className="inline-block text-white text-xl underline underline-offset-4 transition-colors hover:text-[var(--color-accent-bright)]"
             >
               How can I help?
             </a>

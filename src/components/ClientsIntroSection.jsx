@@ -1,6 +1,6 @@
 function ClientsIntroSection() {
     return (
-      <section className="relative bg-[#070707] px-6 py-24 text-white md:px-10 lg:px-14">
+      <section className="relative bg-[var(--color-bg-base)] px-6 py-24 text-white md:px-10 lg:px-14">
         <div className="mx-auto max-w-[1600px]">
           <p className="mb-10 text-sm font-medium uppercase tracking-[0.18em] text-white/60">
             Industry leaders I worked for
