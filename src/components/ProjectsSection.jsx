@@ -68,7 +68,7 @@ function ThumbnailRail({
           type="button"
           onClick={() => onOpenProject(displayProject.slug)}
           {...cursorTarget}
-          className="relative h-[4.8rem] w-[3.7rem] overflow-hidden border border-[var(--color-accent)] transition-all duration-500"
+          className="relative h-[2.4rem] w-[3.8rem] overflow-hidden border border-[var(--color-accent)] transition-all duration-500"
         >
           {isTransitioning ? (
             <>
@@ -169,21 +169,22 @@ function CenterVisual({
   const current = projects[fromIndex];
   const next = projects[toIndex];
 
-  const centerW = 460;
-  const centerH = 620;
-  const sideW = 220;
-  const sideH = 300;
+  // Match screenshot aspect (16:10) so the full website shows without zoom/crop.
+  const centerW = 640;
+  const centerH = 400;
+  const sideW = 320;
+  const sideH = 200;
 
-  const centerX = 20;
-  const centerY = 80;
+  const centerX = 10;
+  const centerY = 10;
 
-  // Outgoing fully leaves, but stays close to the incoming card on the way out.
-  const exitX = -620;
+  // Outgoing exits upper-left, high enough to clear the incoming card.
+  const exitX = -560;
   const exitY = -480;
 
-  // Incoming starts just beside the main card (not far off-screen).
-  const enterX = 210;
-  const enterY = 170;
+  // Incoming enters from lower-right.
+  const enterX = 340;
+  const enterY = 200;
 
   // Incoming settles into center early so the middle never goes empty.
   const inT = clamp(localT / 0.62);

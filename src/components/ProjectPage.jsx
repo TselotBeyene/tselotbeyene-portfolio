@@ -80,7 +80,7 @@ export default function ProjectPage({
             </div>
 
             <div className="lg:pt-12">
-              <div className="mx-auto h-[34rem] max-w-[28rem]">
+              <div className="mx-auto aspect-[16/10] w-full max-w-[46rem] overflow-hidden">
                 <ProjectVisual project={project} />
               </div>
 
