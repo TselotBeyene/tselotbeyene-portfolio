@@ -324,38 +324,84 @@ function RightMeta({
 
   return (
     <div
-      className="absolute right-[4.8rem] top-[18%] z-30 hidden w-[19rem] lg:block"
+      className="absolute right-[3.6rem] top-[14%] z-30 hidden w-[22rem] lg:block"
       style={{ opacity }}
     >
-      <div className="space-y-[4.2rem]">
+      <div className="space-y-7">
         <div>
-          <p className="mb-3 text-[0.95rem] text-white/28">Year</p>
-          <h3 className="text-[3.1rem] font-semibold leading-none tracking-[-0.06em] text-white">
-            {project.year}
-          </h3>
-        </div>
-
-        <div>
-          <p className="mb-3 text-[0.95rem] text-white/28">Role</p>
-          <p className="text-[1.12rem] leading-[1.35] text-white/82">
-            {project.role}
+          <p className="mb-2 text-[0.85rem] uppercase tracking-[0.18em] text-white/28">
+            Category
           </p>
+          <p className="text-[1.05rem] text-white/78">{project.eyebrow}</p>
         </div>
 
-        <div className="pt-3">
-          <p className="mb-3 text-[0.95rem] text-white/28">Description</p>
-          <p className="text-[1.04rem] leading-[1.42] text-white/72">
+        <div className="grid grid-cols-2 gap-6 border-t border-white/10 pt-6">
+          <div>
+            <p className="mb-2 text-[0.85rem] uppercase tracking-[0.18em] text-white/28">
+              Year
+            </p>
+            <h3 className="text-[2.4rem] font-semibold leading-none tracking-[-0.06em] text-white">
+              {project.year}
+            </h3>
+          </div>
+          <div>
+            <p className="mb-2 text-[0.85rem] uppercase tracking-[0.18em] text-white/28">
+              Role
+            </p>
+            <p className="text-[1.05rem] leading-[1.35] text-white/82">
+              {project.role}
+            </p>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-6">
+          <p className="mb-2 text-[0.85rem] uppercase tracking-[0.18em] text-white/28">
+            Overview
+          </p>
+          <p className="text-[1.02rem] leading-[1.45] text-white/72">
             {project.description}
           </p>
+        </div>
+
+        <div className="border-t border-white/10 pt-6">
+          <p className="mb-3 text-[0.85rem] uppercase tracking-[0.18em] text-white/28">
+            Focus
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {project.lines.map((line) => (
+              <span
+                key={line}
+                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[0.88rem] text-white/70"
+              >
+                {line}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-6">
+          <p className="mb-3 text-[0.85rem] uppercase tracking-[0.18em] text-white/28">
+            Stack
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {project.stack.slice(0, 4).map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-white/10 px-3 py-1.5 text-[0.82rem] text-white/55"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
         </div>
 
         <button
           type="button"
           onClick={() => onOpenProject(project.slug)}
           {...cursorTarget}
-          className="inline-flex items-center gap-2 pt-2 text-[1.05rem] font-medium text-[var(--color-accent)] underline underline-offset-4"
+          className="inline-flex items-center gap-2 pt-1 text-[1.05rem] font-medium text-[var(--color-accent)] underline underline-offset-4"
         >
-          View project <span>↗</span>
+          View project details <span>↗</span>
         </button>
       </div>
     </div>
@@ -423,13 +469,35 @@ export default function ProjectsSection({ onOpenProject }) {
         />
 
         <div className="absolute bottom-8 left-6 right-6 z-40 lg:hidden">
-          <div className="mb-3 text-sm text-white/70">
+          <div className="mb-2 text-sm text-white/55">
             {projects[activeIndex].id} /{" "}
             {projects.length.toString().padStart(2, "0")}
+            <span className="mx-2 text-white/20">·</span>
+            {projects[activeIndex].eyebrow}
           </div>
-          <h3 className="text-[2.6rem] font-semibold leading-[0.92] tracking-[-0.07em] text-white">
+          <h3 className="text-[2.4rem] font-semibold leading-[0.92] tracking-[-0.07em] text-white">
             {projects[activeIndex].title}
           </h3>
+          <p className="mt-3 max-w-[34rem] text-[0.98rem] leading-[1.45] text-white/62">
+            {projects[activeIndex].description}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {projects[activeIndex].lines.map((line) => (
+              <span
+                key={line}
+                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[0.8rem] text-white/65"
+              >
+                {line}
+              </span>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenProject(projects[activeIndex].slug)}
+            className="mt-5 inline-flex items-center gap-2 text-[1rem] font-medium text-[var(--color-accent)] underline underline-offset-4"
+          >
+            View project details <span>↗</span>
+          </button>
         </div>
       </div>
     </section>

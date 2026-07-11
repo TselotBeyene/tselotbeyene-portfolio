@@ -56,10 +56,30 @@ export default function ProjectPage({
               </div>
 
               <div className="mt-10 border-t border-white/10 pt-8">
+                <p className="mb-4 text-[0.9rem] text-white/30">Focus</p>
+                <div className="flex flex-wrap gap-2">
+                  {project.lines.map((line) => (
+                    <span
+                      key={line}
+                      className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[0.92rem] text-white/68"
+                    >
+                      {line}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-10 border-t border-white/10 pt-8">
                 <p className="mb-4 text-[0.9rem] text-white/30">Highlights</p>
                 <div className="space-y-4 text-[1.02rem] leading-7 text-white/62">
                   {project.bullets.map((bullet) => (
-                    <p key={bullet}>{bullet}</p>
+                    <p key={bullet} className="flex gap-3">
+                      <span
+                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ background: project.accent }}
+                      />
+                      <span>{bullet}</span>
+                    </p>
                   ))}
                 </div>
               </div>
