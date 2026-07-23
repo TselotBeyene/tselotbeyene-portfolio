@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 
 import avatarAdam from "../assets/adam.jpg";
 import avatarSetegn from "../assets/setegn.jpg";
-import avatarMuhaba from "../assets/tselot3.jpg";
+// import avatarMuhaba from "../assets/tselot3.jpg";
 import { useCursor, useCursorTarget } from "../context/CursorContext";
 
 const testimonials = [
@@ -24,7 +24,7 @@ const testimonials = [
     id: "02.",
     name: "Muhaba Mohammed",
     role: "Colleague · Atlas Computer Technology",
-    image: avatarMuhaba,
+    // image: avatarMuhaba,
     preview:
       "Still one of the people I trust most when production systems need calm, practical engineering.",
     full: [
