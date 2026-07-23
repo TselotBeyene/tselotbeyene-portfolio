@@ -1,10 +1,17 @@
-function Navbar({ onNavigateHome, onNavigateProjects, isProjectPage = false }) {
+function Navbar({
+  onNavigateHome,
+  onNavigateProjects,
+  onNavigateAsk,
+  isProjectPage = false,
+  isAskPage = false,
+}) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 text-sm text-white/70 md:px-10 lg:px-14">
       <button
         type="button"
         onClick={onNavigateHome}
         className="bg-transparent text-[2rem] font-semibold tracking-tight md:text-[2.3rem]"
+        data-cursor-label="Home"
       >
         Tselot<span className="text-white/25">Beyene</span>
       </button>
@@ -33,25 +40,33 @@ function Navbar({ onNavigateHome, onNavigateProjects, isProjectPage = false }) {
         <button
           type="button"
           onClick={onNavigateHome}
-          className="hidden bg-transparent transition-colors hover:text-white md:inline"
+          className={`hidden bg-transparent transition-colors hover:text-white md:inline ${
+            !isProjectPage && !isAskPage ? "text-white" : ""
+          }`}
         >
           Index
         </button>
         <span className="hidden text-white/30 md:inline">/</span>
         <button
           type="button"
-          onClick={onNavigateHome}
-          className="hidden bg-transparent transition-colors hover:text-white md:inline"
+          onClick={isProjectPage ? onNavigateHome : onNavigateProjects}
+          className={`hidden bg-transparent transition-colors hover:text-white md:inline ${
+            isProjectPage ? "text-white" : ""
+          }`}
         >
-          About
+          Projects
         </button>
         <span className="hidden text-white/30 md:inline">/</span>
         <button
           type="button"
-          onClick={isProjectPage ? onNavigateHome : onNavigateProjects}
-          className="hidden bg-transparent transition-colors hover:text-white md:inline"
+          onClick={onNavigateAsk}
+          className={`bg-transparent transition-colors hover:text-white ${
+            isAskPage ? "text-white" : ""
+          }`}
+          data-cursor-label="Ask"
         >
-          Projects
+          <span className="md:hidden">Ask</span>
+          <span className="hidden md:inline">Ask Me Anything</span>
         </button>
         <a
           href="mailto:tselotbeyene70@gmail.com"

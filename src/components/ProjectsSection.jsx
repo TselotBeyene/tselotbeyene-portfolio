@@ -24,8 +24,8 @@ function easeInOutCubic(t) {
 
 function getSequence(progress) {
   const reveal = clamp(mapRange(progress, 0.14, 0.24, 0, 1));
-  const sequenceStart = 0.24;
-  const sequenceEnd = 0.92;
+  const sequenceStart = 0.2;
+  const sequenceEnd = 0.96;
   const normalized = clamp(mapRange(progress, sequenceStart, sequenceEnd, 0, 1));
 
   const segmentCount = projects.length - 1;
@@ -43,7 +43,8 @@ function getSequence(progress) {
     reveal,
     fromIndex,
     toIndex,
-    localT,
+    rawT: t,
+    localT: easeInOutCubic(t),
     isTransitioning: fromIndex !== toIndex && t > 0 && t < 1,
   };
 }
@@ -61,58 +62,56 @@ function ThumbnailRail({
   const totalCount = projects.length.toString().padStart(2, "0");
 
   return (
-    <div className="absolute left-[3.2rem] top-[22%] z-30 hidden lg:block">
-      <div className="flex flex-col items-start">
-        <div className="mb-4 h-px w-[3.8rem] bg-white/12" />
-        <button
-          type="button"
-          onClick={() => onOpenProject(displayProject.slug)}
-          {...cursorTarget}
-          className="relative h-[2.4rem] w-[3.8rem] overflow-hidden border border-[var(--color-accent)] transition-all duration-500"
-        >
-          {isTransitioning ? (
-            <>
-              <div
-                className="absolute inset-0"
-                style={{
-                  transform: `translateY(${lerp(0, -100, localT)}%) scale(${lerp(
-                    1,
-                    0.92,
-                    localT
-                  )})`,
-                  opacity: lerp(1, 0, localT),
-                  transformOrigin: "center center",
-                }}
-              >
-                <ProjectVisual project={currentProject} compact />
-              </div>
-              <div
-                className="absolute inset-0"
-                style={{
-                  transform: `translateY(${lerp(100, 0, localT)}%) scale(${lerp(
-                    0.92,
-                    1,
-                    localT
-                  )})`,
-                  opacity: lerp(0, 1, localT),
-                  transformOrigin: "center center",
-                }}
-              >
-                <ProjectVisual project={upcomingProject} compact />
-              </div>
-            </>
-          ) : (
-            <ProjectVisual project={displayProject} compact />
-          )}
-        </button>
-        <div className="mt-[0.35rem] h-[3px] w-[3.7rem] bg-[var(--color-accent)]" />
-        <div className="mt-6 text-[1.1rem] tracking-[-0.04em] text-white/92">
-          <span>{displayProject.id}</span>
-          <span className="mx-2 text-white/28">/</span>
-          <span className="text-white/28">{totalCount}</span>
-        </div>
-        <div className="mt-4 h-px w-[3.8rem] bg-white/12" />
+    <div className="flex flex-col items-start">
+      <div className="mb-4 h-px w-[3.8rem] bg-white/12" />
+      <button
+        type="button"
+        onClick={() => onOpenProject(displayProject.slug)}
+        {...cursorTarget}
+        className="relative h-[2.4rem] w-[3.8rem] overflow-hidden border border-[var(--color-accent)] transition-all duration-500"
+      >
+        {isTransitioning ? (
+          <>
+            <div
+              className="absolute inset-0"
+              style={{
+                transform: `translateY(${lerp(0, -100, localT)}%) scale(${lerp(
+                  1,
+                  0.92,
+                  localT
+                )})`,
+                opacity: lerp(1, 0, localT),
+                transformOrigin: "center center",
+              }}
+            >
+              <ProjectVisual project={currentProject} compact />
+            </div>
+            <div
+              className="absolute inset-0"
+              style={{
+                transform: `translateY(${lerp(100, 0, localT)}%) scale(${lerp(
+                  0.92,
+                  1,
+                  localT
+                )})`,
+                opacity: lerp(0, 1, localT),
+                transformOrigin: "center center",
+              }}
+            >
+              <ProjectVisual project={upcomingProject} compact />
+            </div>
+          </>
+        ) : (
+          <ProjectVisual project={displayProject} compact />
+        )}
+      </button>
+      <div className="mt-[0.35rem] h-[3px] w-[3.7rem] bg-[var(--color-accent)]" />
+      <div className="mt-6 text-[1.1rem] tracking-[-0.04em] text-white/92">
+        <span>{displayProject.id}</span>
+        <span className="mx-2 text-white/28">/</span>
+        <span className="text-white/28">{totalCount}</span>
       </div>
+      <div className="mt-4 h-px w-[3.8rem] bg-white/12" />
     </div>
   );
 }
@@ -163,113 +162,128 @@ function CenterVisual({
   onOpenProject,
   cursorTarget,
 }) {
-  const { reveal, fromIndex, toIndex, localT, isTransitioning } =
-    getSequence(progress);
+  const stageRef = useRef(null);
+  const { reveal, fromIndex, toIndex, rawT } = getSequence(progress);
 
   const current = projects[fromIndex];
   const next = projects[toIndex];
+  const hasNext = fromIndex < projects.length - 1;
+  const containerY = lerp(24, 0, reveal);
+  const startScale = 0.12;
+  const t = easeInOutCubic(rawT);
 
-  // Match screenshot aspect (16:10) so the full website shows without zoom/crop.
-  const centerW = 640;
-  const centerH = 400;
-  const sideW = 320;
-  const sideH = 200;
+  const [layout, setLayout] = useState({
+    w: 560,
+    h: 350,
+    ax: 0,
+    ay: 0,
+  });
 
-  const centerX = 10;
-  const centerY = 10;
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
 
-  // Outgoing exits upper-left, high enough to clear the incoming card.
-  const exitX = -560;
-  const exitY = -480;
+    const measure = () => {
+      const { width, height } = el.getBoundingClientRect();
+      const w = Math.min(560, Math.max(240, width * 0.9));
+      const h = w * (10 / 16);
+      const ax = (width - w) / 2;
+      const ay = (height - h) / 2;
+      setLayout((prev) =>
+        prev.w === w && prev.h === h && prev.ax === ax && prev.ay === ay
+          ? prev
+          : { w, h, ax, ay },
+      );
+    };
 
-  // Incoming enters from lower-right.
-  const enterX = 340;
-  const enterY = 200;
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
 
-  // Incoming settles into center early so the middle never goes empty.
-  const inT = clamp(localT / 0.62);
-  // Outgoing keeps moving until it is fully gone.
-  const outT = localT;
+  const { w, h, ax, ay } = layout;
 
-  const containerY = lerp(30, 0, reveal);
+  // Shared path ends exactly on the main slot. Image 2 must not travel past
+  // (-w, -h) and settle back — that reverse move is what caused the end jump.
+  // Landing here also matches the next segment's resting current image, so the
+  // index handoff stays seamless.
+  const tx = lerp(0, -w, t);
+  const ty = lerp(0, -h, t);
+  const s2 = lerp(startScale, 1, t);
 
-  const centerStyle = {
-    width: `${centerW}px`,
-    height: `${centerH}px`,
-    transform: `translate3d(calc(-50% + ${centerX}px), calc(-50% + ${centerY}px + ${containerY}px), 0)`,
-    opacity: reveal,
-  };
-
-  const outgoingStyle = {
-    width: `${lerp(centerW, sideW, outT)}px`,
-    height: `${lerp(centerH, sideH, outT)}px`,
-    transform: `translate3d(calc(-50% + ${lerp(
-      centerX,
-      exitX,
-      outT
-    )}px), calc(-50% + ${lerp(centerY, exitY, outT)}px + ${containerY}px), 0) scale(${lerp(
-      1,
-      0.88,
-      outT
-    )})`,
-    opacity: lerp(reveal, 0, outT),
-  };
-
-  const incomingStyle = {
-    width: `${lerp(sideW, centerW, inT)}px`,
-    height: `${lerp(sideH, centerH, inT)}px`,
-    transform: `translate3d(calc(-50% + ${lerp(
-      enterX,
-      centerX,
-      inT
-    )}px), calc(-50% + ${lerp(enterY, centerY, inT)}px + ${containerY}px), 0)`,
-    opacity: inT <= 0 ? 0 : lerp(0.55, reveal, inT),
-  };
+  const outgoingTransform = `translate3d(${tx}px, ${ty}px, 0)`;
+  const incomingTransform = `translate3d(${tx}px, ${ty}px, 0) scale(${s2})`;
+  // Fade the outgoing image out only after it has mostly left, so no strip
+  // lingers — without moving image 2 off the slot.
+  const outgoingOpacity =
+    reveal * (1 - clamp(mapRange(t, 0.88, 1, 0, 1)));
 
   return (
-    <div className="absolute inset-0 z-20 hidden overflow-hidden lg:block">
-      <div className="absolute left-1/2 top-1/2 h-screen w-screen -translate-x-1/2 -translate-y-1/2">
-        {isTransitioning && localT > 0 && localT < 1 ? (
-          <>
-            <button
-              type="button"
-              onClick={() => onOpenProject(current.slug)}
-              {...cursorTarget}
-              className="absolute left-1/2 top-1/2 overflow-hidden text-left"
-              style={{ ...outgoingStyle, zIndex: 4 }}
-            >
-              <ProjectVisual project={current} />
-            </button>
-            <button
-              type="button"
-              onClick={() => onOpenProject(next.slug)}
-              {...cursorTarget}
-              className="absolute left-1/2 top-1/2 overflow-hidden text-left"
-              style={{ ...incomingStyle, zIndex: 3 }}
-            >
-              <ProjectVisual project={next} />
-            </button>
-          </>
-        ) : (
+    <div ref={stageRef} className="relative h-full w-full overflow-hidden">
+      <div
+        className="absolute inset-0"
+        style={{ transform: `translate3d(0, ${containerY}px, 0)` }}
+      >
+        {hasNext && (
           <button
             type="button"
-            onClick={() => onOpenProject(current.slug)}
+            onClick={() => onOpenProject(next.slug)}
             {...cursorTarget}
-            className="absolute left-1/2 top-1/2 overflow-hidden text-left"
-            style={{ ...centerStyle, zIndex: 3 }}
+            className="absolute overflow-hidden text-left"
+            aria-label={next.title}
+            style={{
+              left: ax + w,
+              top: ay + h,
+              width: w,
+              height: h,
+              opacity: reveal,
+              zIndex: 2,
+              willChange: "transform",
+              transformOrigin: "top left",
+              transform: incomingTransform,
+            }}
           >
-            <ProjectVisual project={current} />
+            <ProjectVisual project={next} />
           </button>
         )}
+
+        <button
+          type="button"
+          onClick={() => onOpenProject(current.slug)}
+          {...cursorTarget}
+          className="absolute overflow-hidden text-left"
+          aria-label={current.title}
+          style={{
+            left: ax,
+            top: ay,
+            width: w,
+            height: h,
+            opacity: hasNext ? outgoingOpacity : reveal,
+            zIndex: 4,
+            willChange: "transform",
+            transformOrigin: "top left",
+            transform: hasNext ? outgoingTransform : "translate3d(0,0,0)",
+          }}
+        >
+          <ProjectVisual project={current} />
+        </button>
 
         {fromIndex === projects.length - 1 && (
           <button
             type="button"
             onClick={() => onOpenProject(current.slug)}
             {...cursorTarget}
-            className="absolute left-1/2 top-1/2 flex h-[5.4rem] w-[5.4rem] items-center justify-center rounded-full bg-[var(--color-accent)] text-[1.1rem] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
+            className="absolute flex h-[5.4rem] w-[5.4rem] items-center justify-center rounded-full bg-[var(--color-accent)] text-[1.1rem] text-white shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
             style={{
+              left: ax + w / 2,
+              top: ay + h / 2,
               opacity: clamp(mapRange(progress, 0.72, 0.88, 0, 1)),
+              willChange: "transform",
               transform: `translate3d(-50%, -50%, 0) scale(${lerp(
                 0.86,
                 1,
@@ -290,10 +304,7 @@ function LeftBottomTitle({ activeIndex, progress }) {
   const totalCount = projects.length.toString().padStart(2, "0");
 
   return (
-    <div
-      className="absolute bottom-[3.2rem] left-[3.2rem] z-30 hidden lg:block"
-      style={{ opacity }}
-    >
+    <div style={{ opacity }}>
       <div className="text-[1.1rem] tracking-[-0.04em] text-white/92">
         <span>{projects[activeIndex].id}</span>
         <span className="mx-2 text-white/28">/</span>
@@ -302,7 +313,7 @@ function LeftBottomTitle({ activeIndex, progress }) {
 
       <div className="mt-6 h-px w-[3.8rem] bg-white/12" />
 
-      <h3 className="mt-8 text-[5.2rem] font-semibold leading-[0.9] tracking-[-0.08em] text-white">
+      <h3 className="mt-8 max-w-[12rem] text-[clamp(2.6rem,4.2vw,4.6rem)] font-semibold leading-[0.92] tracking-[-0.08em] text-white">
         {projects[activeIndex].title.split(" ").map((line, i) => (
           <span key={i} className="block">
             {line}
@@ -324,10 +335,10 @@ function RightMeta({
 
   return (
     <div
-      className="absolute right-[3.6rem] top-[14%] z-30 hidden w-[22rem] lg:block"
+      className="flex h-full min-h-0 flex-col justify-center"
       style={{ opacity }}
     >
-      <div className="space-y-7">
+      <div className="max-h-full space-y-6 overflow-y-auto overscroll-contain pr-1">
         <div>
           <p className="mb-2 text-[0.85rem] uppercase tracking-[0.18em] text-white/28">
             Category
@@ -442,31 +453,42 @@ export default function ProjectsSection({ onOpenProject }) {
   return (
     <section
       ref={sectionRef}
-      className="relative h-[430vh] bg-[var(--color-bg-deep)] text-white"
+      className="relative h-[480vh] bg-[var(--color-bg-deep)] text-white"
     >
       <div className="sticky top-0 h-screen overflow-hidden bg-[var(--color-bg-deep)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-glow-warm)_0%,rgba(6,95,70,0.03)_28%,rgba(0,0,0,0)_60%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:120px_100%] opacity-[0.04]" />
 
         <IntroOverlay progress={progress} />
-        <ThumbnailRail
-          activeIndex={activeIndex}
-          progress={progress}
-          onOpenProject={onOpenProject}
-          cursorTarget={cursorTarget}
-        />
-        <CenterVisual
-          progress={progress}
-          onOpenProject={onOpenProject}
-          cursorTarget={cursorTarget}
-        />
-        <LeftBottomTitle activeIndex={activeIndex} progress={progress} />
-        <RightMeta
-          activeIndex={activeIndex}
-          progress={progress}
-          onOpenProject={onOpenProject}
-          cursorTarget={cursorTarget}
-        />
+
+        <div className="relative z-20 hidden h-full grid-cols-[minmax(12rem,16rem)_minmax(0,1fr)_minmax(18rem,22rem)] gap-8 px-10 pb-10 pt-28 lg:grid xl:px-14">
+          <div className="flex min-h-0 flex-col justify-between py-6">
+            <ThumbnailRail
+              activeIndex={activeIndex}
+              progress={progress}
+              onOpenProject={onOpenProject}
+              cursorTarget={cursorTarget}
+            />
+            <LeftBottomTitle activeIndex={activeIndex} progress={progress} />
+          </div>
+
+          <div className="relative min-h-0 min-w-0 overflow-hidden">
+            <CenterVisual
+              progress={progress}
+              onOpenProject={onOpenProject}
+              cursorTarget={cursorTarget}
+            />
+          </div>
+
+          <div className="min-h-0 min-w-0 pl-2">
+            <RightMeta
+              activeIndex={activeIndex}
+              progress={progress}
+              onOpenProject={onOpenProject}
+              cursorTarget={cursorTarget}
+            />
+          </div>
+        </div>
 
         <div className="absolute bottom-8 left-6 right-6 z-40 lg:hidden">
           <div className="mb-2 text-sm text-white/55">

@@ -1,4 +1,5 @@
 import secondImage from "../assets/tselot.jpg";
+import { experience } from "../data/projects";
 
 function clamp(value, min = 0, max = 1) {
   return Math.min(Math.max(value, min), max);
@@ -18,15 +19,17 @@ const introWords = [
   "pipelines,", "monitoring,", "and", "containerized", "deployments,", "I",
   "focus", "on", "shipping", "systems", "that", "scale,", "stay", "observable,",
   "and", "solve", "real", "business", "problems.", "My", "experience", "spans",
-  "financial", "platforms,", "compliance", "tools,", "and", "integration-heavy",
-  "products", "where", "both", "product", "delivery", "and", "technical",
+  "payments,", "mobile", "banking,", "and", "legal-tech", "platforms",
+  "where", "both", "product", "delivery", "and", "technical",
   "execution", "matter.",
 ];
 
 const experienceHighlights = [
-  { title: "ArifPay", year: "2025", client: "DevOps Engineer" },
-  { title: "Andrew Williams Solicitors", year: "2024", client: "Full Stack Developer" },
-  { title: "Atlas Computer Technologies", year: "2022", client: "DevOps Engineer" },
+  ...experience.map((job) => ({
+    title: job.company,
+    year: job.year,
+    client: job.role,
+  })),
   { title: "RouteForge", year: "2026", client: "Personal Project" },
 ];
 
@@ -97,19 +100,23 @@ function IntroSection({ progress = 0 }) {
                 <LogoTile>ArifPay</LogoTile>
                 <div /><div /><div />
                 <div />
-                <LogoTile>AWS</LogoTile>
+                <LogoTile>
+                  <span className="text-[0.85rem] leading-snug">
+                    Andrew Williams Solicitors
+                  </span>
+                </LogoTile>
                 <div /><div />
-                <LogoTile>IBIAB</LogoTile>
-                <div />
                 <LogoTile>Atlas</LogoTile>
                 <div />
+                <LogoTile muted>Payments</LogoTile>
                 <div />
-                <LogoTile>SEP</LogoTile>
+                <div />
+                <LogoTile muted>Banking</LogoTile>
                 <div />
                 <LogoTile>RouteForge</LogoTile>
-                <LogoTile muted>Apache Camel</LogoTile>
+                <LogoTile muted>Full stack</LogoTile>
                 <div />
-                <LogoTile muted>Spring Boot</LogoTile>
+                <LogoTile muted>DevOps</LogoTile>
                 <div />
                 <div />
                 <LogoTile muted>Docker</LogoTile>

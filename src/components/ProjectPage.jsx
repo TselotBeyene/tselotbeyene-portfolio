@@ -121,6 +121,52 @@ export default function ProjectPage({
                   Back to projects
                 </button>
               </div>
+
+              {project.relatedLinks?.length ? (
+                <div className="mt-8 border-t border-white/10 pt-6">
+                  <p className="mb-3 text-[0.9rem] text-white/30">Live products</p>
+                  <div className="flex flex-wrap gap-3">
+                    {project.relatedLinks.map((item) => (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-full border border-white/12 bg-white/[0.04] px-4 py-2 text-[0.9rem] text-white/70 transition hover:border-white/30 hover:text-white"
+                      >
+                        {item.label} ↗
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {project.gallery?.length ? (
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {project.gallery.map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block overflow-hidden border border-white/10 bg-white/[0.03]"
+                    >
+                      <div className="aspect-[16/10] overflow-hidden">
+                        <img
+                          src={item.src}
+                          alt={item.label}
+                          className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3 text-[0.92rem] text-white/70">
+                        <span>{item.label}</span>
+                        <span className="text-white/35">↗</span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
 

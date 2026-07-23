@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import avatar1 from "../assets/tselot.jpg";
+import avatar1 from "../assets/setegn.jpg";
 import avatar2 from "../assets/tselot_b.jpg";
 import avatar3 from "../assets/tselot3.jpg";
 import { useCursor, useCursorTarget } from "../context/CursorContext";
@@ -8,39 +8,41 @@ import { useCursor, useCursorTarget } from "../context/CursorContext";
 const testimonials = [
   {
     id: "01.",
-    name: "Testimonial Placeholder",
-    role: "Professional reference pending",
-    image: avatar1,
+    name: "Adam Tewodros",
+    role: "Upwork client",
+    image: avatar2,
     preview:
-      "A real testimonial can be added here once a client, teammate, or manager quote is available.",
+      "Tselot delivered clean work, clear updates, and never left me guessing about progress.",
     full: [
-      "This section is intentionally left as a placeholder until real testimonials are provided.",
-      "Suggested sources include managers, collaborators, or clients from ArifPay, Andrew Williams Solicitors, Atlas Computer Technologies, or RouteForge-related work.",
-      "Once real quotes are available, this panel can show longer testimonial content without changing the section layout.",
+      "I hired Tselot on Upwork and it was one of the smoother freelance collaborations I've had. He understood the brief quickly, asked the right questions early, and kept communication simple and consistent.",
+      "What stood out was ownership — he didn't just complete tasks, he thought about edge cases, delivery quality, and how the work would hold up after handoff.",
+      "If you need someone reliable who can move between product details and technical execution without drama, I'd recommend him without hesitation.",
     ],
   },
   {
     id: "02.",
-    name: "Reference Placeholder",
-    role: "Client or team lead quote",
-    image: avatar2,
+    name: "Muhaba Mohammed",
+    role: "Colleague · Atlas Computer Technology",
+    image: avatar3,
     preview:
-      "Reserved for a short endorsement about backend development, DevOps, or platform reliability.",
+      "Still one of the people I trust most when production systems need calm, practical engineering.",
     full: [
-      "Use this space for a concise quote about technical ownership, collaboration, or engineering execution.",
-      "The detailed view is ready for a multi-paragraph testimonial when you want to publish one.",
+      "I worked with Tselot at Atlas Computer Technology, and we still collaborate. In banking and delivery work, you learn quickly who stays steady when things get messy — he's that person.",
+      "He's strong across the stack and especially dependable around infrastructure, deployments, and making sure systems behave in real production conditions, not just demos.",
+      "Beyond the technical side, he's easy to work with: clear, accountable, and focused on getting the right outcome for the team and the client.",
     ],
   },
   {
     id: "03.",
-    name: "Project Endorsement Placeholder",
-    role: "Delivery or technical leadership quote",
-    image: avatar3,
+    name: "Setegn",
+    role: "Colleague · Atlas Computer Technology",
+    image: avatar1,
     preview:
-      "Reserved for a project-specific quote that supports the portfolio once verified testimonials are available.",
+      "A teammate who ships carefully, communicates well, and still shows up when the work gets hard.",
     full: [
-      "This placeholder avoids publishing invented testimonials while keeping the interaction design of the section intact.",
-      "When ready, replace it with a real quote tied to delivery quality, system reliability, or cross-functional teamwork.",
+      "Tselot and I worked together at Atlas Computer Technology on mobile banking delivery, and we continue to work together. He's the kind of engineer you want in the room when reliability matters.",
+      "He balances speed with care — moving work forward without cutting corners on quality, coordination, or follow-through. That made collaboration smoother for everyone around him.",
+      "I'd describe him as practical, sharp, and trustworthy. Whether it's day-to-day delivery or solving something under pressure, he makes the team better.",
     ],
   },
 ];

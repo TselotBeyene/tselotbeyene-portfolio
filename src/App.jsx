@@ -1,23 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import ScrollScene from "./components/ScrollScene";
 import CrossBannerSection from "./components/CrossBannersSection";
 import ProjectsSection from "./components/ProjectsSection";
 import TestimonialsSection from "./components/TestimonialSection";
-import FooterTransition from "./components/FooterTransition";
-import PortraitHandoff from "./components/PortraitHandoff";
 import ProjectPage from "./components/ProjectPage";
+import AskMeAnythingPage from "./components/AskMeAnythingPage";
 import DotCursor from "./components/DotCursor";
 import { CursorProvider } from "./context/CursorContext";
-import useReducedMotion from "./hooks/useReducedMotion";
 import { getProjectBySlug, projects } from "./data/projects";
 
 function App() {
-  const reducedMotion = useReducedMotion();
-  const [handoffRect, setHandoffRect] = useState(null);
-  const [heroHidden, setHeroHidden] = useState(false);
   const [pathname, setPathname] = useState(window.location.pathname);
-  const resetFooterRef = useRef(null);
 
   const navigateTo = useCallback((nextPath) => {
     if (nextPath !== window.location.pathname) {
@@ -35,37 +29,11 @@ function App() {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  const handleLoopHandoff = useCallback((resetFooter) => {
-    const frame = document.getElementById("footer-portrait-frame");
-    const img = document.getElementById("footer-portrait");
-    const el = frame || img;
-
-    if (!el) {
-      resetFooter();
-      return;
-    }
-
-    const rect = el.getBoundingClientRect();
-    resetFooterRef.current = resetFooter;
-
-    requestAnimationFrame(() => {
-      setHeroHidden(true);
-      setHandoffRect(rect);
-    });
-  }, []);
-
-  const handleHandoffArrive = useCallback(() => {
-    setHeroHidden(false);
-  }, []);
-
-  const handleHandoffComplete = useCallback(() => {
-    resetFooterRef.current?.();
-    resetFooterRef.current = null;
-    setHandoffRect(null);
-  }, []);
+  const isAskPage =
+    pathname === "/ask" || pathname === "/ask-me-anything";
 
   const currentProject =
-    pathname.startsWith("/projects/")
+    !isAskPage && pathname.startsWith("/projects/")
       ? getProjectBySlug(pathname.replace("/projects/", ""))
       : null;
 
@@ -80,30 +48,14 @@ function App() {
       ? projects[currentProjectIndex + 1]
       : null;
 
-  // Scroll up on the first page loops to the footer (reverse of footer → hero).
+  const isHome = !currentProject && !isAskPage;
+
+  // Always land at the top when opening the home experience.
   useEffect(() => {
-    if (currentProject || handoffRect != null) return;
-
-    let locked = false;
-
-    const onWheel = (event) => {
-      if (locked || event.deltaY >= 0) return;
-      if (window.scrollY > 4) return;
-
-      const footer = document.getElementById("site-footer");
-      if (!footer) return;
-
-      event.preventDefault();
-      locked = true;
-      footer.scrollIntoView({ behavior: "instant", block: "start" });
-      window.setTimeout(() => {
-        locked = false;
-      }, 200);
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => window.removeEventListener("wheel", onWheel);
-  }, [currentProject, handoffRect]);
+    if (!isHome) return;
+    window.history.scrollRestoration = "manual";
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [isHome]);
 
   return (
     <CursorProvider>
@@ -112,10 +64,14 @@ function App() {
         <Navbar
           onNavigateHome={() => navigateTo("/")}
           onNavigateProjects={() => navigateTo("/")}
+          onNavigateAsk={() => navigateTo("/ask")}
           isProjectPage={Boolean(currentProject)}
+          isAskPage={isAskPage}
         />
 
-        {currentProject ? (
+        {isAskPage ? (
+          <AskMeAnythingPage />
+        ) : currentProject ? (
           <ProjectPage
             project={currentProject}
             previousProject={previousProject}
@@ -125,28 +81,14 @@ function App() {
           />
         ) : (
           <>
-            <ScrollScene heroHidden={heroHidden} />
+            <ScrollScene heroHidden={false} />
             <CrossBannerSection />
             <ProjectsSection
               onOpenProject={(slug) => navigateTo(`/projects/${slug}`)}
             />
             <TestimonialsSection />
-
-            <FooterTransition
-              onLoopHandoff={handleLoopHandoff}
-              handoffActive={handoffRect != null}
-              reducedMotion={reducedMotion}
-            />
+            <AskMeAnythingPage />
           </>
-        )}
-
-        {handoffRect && (
-          <PortraitHandoff
-            fromRect={handoffRect}
-            reducedMotion={reducedMotion}
-            onArrive={handleHandoffArrive}
-            onComplete={handleHandoffComplete}
-          />
         )}
       </div>
     </CursorProvider>
