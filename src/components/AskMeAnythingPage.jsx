@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useId, useRef, useState } from "react";
-import portrait from "../assets/Subject.png";
+import portrait from "../assets/tselot_b.png";
 import { fetchAgentStatus, getFollowUps, streamAgentReply } from "../lib/agentClient";
 import useReducedMotion from "../hooks/useReducedMotion";
 

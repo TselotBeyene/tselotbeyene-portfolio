@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
-import avatar1 from "../assets/setegn.jpg";
-import avatar2 from "../assets/tselot_b.jpg";
-import avatar3 from "../assets/tselot3.jpg";
+import avatarAdam from "../assets/adam.jpg";
+import avatarSetegn from "../assets/setegn.jpg";
+import avatarMuhaba from "../assets/tselot3.jpg";
 import { useCursor, useCursorTarget } from "../context/CursorContext";
 
 const testimonials = [
@@ -10,7 +11,7 @@ const testimonials = [
     id: "01.",
     name: "Adam Tewodros",
     role: "Upwork client",
-    image: avatar2,
+    image: avatarAdam,
     preview:
       "Tselot delivered clean work, clear updates, and never left me guessing about progress.",
     full: [
@@ -23,7 +24,7 @@ const testimonials = [
     id: "02.",
     name: "Muhaba Mohammed",
     role: "Colleague · Atlas Computer Technology",
-    image: avatar3,
+    image: avatarMuhaba,
     preview:
       "Still one of the people I trust most when production systems need calm, practical engineering.",
     full: [
@@ -36,7 +37,7 @@ const testimonials = [
     id: "03.",
     name: "Setegn",
     role: "Colleague · Atlas Computer Technology",
-    image: avatar1,
+    image: avatarSetegn,
     preview:
       "A teammate who ships carefully, communicates well, and still shows up when the work gets hard.",
     full: [
@@ -101,11 +102,17 @@ function TestimonialList({ onOpen, cursorTarget, opened }) {
             </div>
 
             <div className="hidden md:block">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="h-[102px] w-[92px] object-cover"
-              />
+              {item.image ? (
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="h-[102px] w-[92px] object-cover"
+                />
+              ) : (
+                <div className="flex h-[102px] w-[92px] items-center justify-center bg-white/[0.06] text-[0.85rem] text-white/35">
+                  {item.name.slice(0, 1)}
+                </div>
+              )}
             </div>
 
             <div>
@@ -128,11 +135,26 @@ function TestimonialList({ onOpen, cursorTarget, opened }) {
 }
 
 function TestimonialDetail({ item, onClose }) {
-  if (!item) return null;
+  const scrollRef = useRef(null);
 
-  return (
-    <div className="absolute inset-0 z-30 overflow-y-auto">
-      <div className="px-6 pb-20 pt-28 md:px-10 lg:px-14">
+  useEffect(() => {
+    if (!item) return;
+    scrollRef.current?.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [item]);
+
+  if (!item || typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      ref={scrollRef}
+      className="fixed inset-0 z-[60] overflow-y-auto bg-[var(--color-bg-deep)]"
+      style={{
+        animation: "testimonialIn 280ms ease both",
+      }}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-glow-warm)_0%,rgba(6,95,70,0.02)_28%,rgba(0,0,0,0)_60%)]" />
+
+      <div className="relative px-6 pb-20 pt-28 md:px-10 lg:px-14">
         <button
           type="button"
           onClick={onClose}
@@ -145,11 +167,17 @@ function TestimonialDetail({ item, onClose }) {
         <div className="border-t border-white/10 pt-12">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.22fr_0.9fr_1.2fr] lg:gap-16">
             <div>
-              <img
-                src={item.image}
-                alt={item.name}
-                className="h-[122px] w-[94px] object-cover"
-              />
+              {item.image ? (
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="h-[122px] w-[94px] object-cover"
+                />
+              ) : (
+                <div className="flex h-[122px] w-[94px] items-center justify-center bg-white/[0.06] text-[1.2rem] text-white/35">
+                  {item.name.slice(0, 1)}
+                </div>
+              )}
             </div>
 
             <div>
@@ -169,7 +197,8 @@ function TestimonialDetail({ item, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -179,15 +208,28 @@ export default function TestimonialsSection() {
   const cursorTarget = useCursorTarget("Read");
 
   useEffect(() => {
-    if (selected) {
-      clearLabel();
-    }
+    if (!selected) return;
+
+    clearLabel();
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
   }, [selected, clearLabel]);
 
   const opened = useMemo(() => Boolean(selected), [selected]);
 
   return (
     <section className="relative min-h-screen bg-[var(--color-bg-deep)] text-white">
+      <style>{`
+        @keyframes testimonialIn {
+          from { opacity: 0; transform: translate3d(0, 16px, 0); }
+          to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+      `}</style>
+
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-glow-warm)_0%,rgba(6,95,70,0.02)_28%,rgba(0,0,0,0)_60%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:120px_100%] opacity-[0.04]" />
 
@@ -199,17 +241,7 @@ export default function TestimonialsSection() {
         opened={opened}
       />
 
-      <div
-        className="absolute inset-0"
-        style={{
-          opacity: opened ? 1 : 0,
-          transform: opened ? "translate3d(0,0,0)" : "translate3d(0,24px,0)",
-          transition: "opacity 320ms ease, transform 320ms ease",
-          pointerEvents: opened ? "auto" : "none",
-        }}
-      >
-        <TestimonialDetail item={selected} onClose={() => setSelected(null)} />
-      </div>
+      <TestimonialDetail item={selected} onClose={() => setSelected(null)} />
     </section>
   );
 }
