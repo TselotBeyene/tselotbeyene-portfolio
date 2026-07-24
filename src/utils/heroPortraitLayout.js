@@ -3,7 +3,10 @@ export const HERO_PORTRAIT_IMAGE_Y = -280;
 export const HERO_PORTRAIT_IMAGE_SCALE = 1;
 
 export function getHeroPortraitWidth(viewportWidth) {
-  return Math.min(Math.max(0.32 * viewportWidth, 360), 520);
+  if (viewportWidth < 640) {
+    return Math.min(Math.max(0.72 * viewportWidth, 220), 360);
+  }
+  return Math.min(Math.max(0.32 * viewportWidth, 280), 520);
 }
 
 export function getHeroPortraitRect({

@@ -51,7 +51,7 @@ const testimonials = [
 function SectionHeading({ opened }) {
   return (
     <div
-      className="px-6 pt-24 md:px-10 lg:px-14"
+      className="px-5 pt-24 sm:px-6 md:px-10 lg:px-14"
       style={{
         opacity: opened ? 0 : 1,
         transform: opened ? "translate3d(0,-30px,0)" : "translate3d(0,0,0)",
@@ -59,16 +59,16 @@ function SectionHeading({ opened }) {
         pointerEvents: opened ? "none" : "auto",
       }}
     >
-      <p className="mb-8 text-[1.1rem] text-white/28">(Testimonials)</p>
+      <p className="mb-6 text-[0.875rem] text-white/28 sm:mb-8 sm:text-[1.1rem]">(Testimonials)</p>
 
-      <div className="max-w-[90rem] leading-[0.86] tracking-[-0.09em] text-white/78">
-        <div className="ml-[24%] text-[4.8rem] font-semibold md:text-[7rem] lg:text-[9rem]">
+      <div className="max-w-[90rem] leading-[0.9] tracking-[-0.07em] text-white/78 sm:leading-[0.86] sm:tracking-[-0.09em]">
+        <div className="ml-0 text-[clamp(1.85rem,9.5vw,2.4rem)] font-semibold sm:ml-[12%] sm:text-[clamp(2.6rem,12vw,9rem)] lg:ml-[24%]">
           WHAT
         </div>
-        <div className="text-[4.8rem] font-semibold md:text-[7rem] lg:text-[9rem]">
+        <div className="text-[clamp(1.85rem,9.5vw,2.4rem)] font-semibold sm:text-[clamp(2.6rem,12vw,9rem)]">
           PEOPLE SAY
         </div>
-        <div className="ml-[24%] flex items-end gap-5 text-[4.8rem] font-semibold md:text-[7rem] lg:text-[9rem]">
+        <div className="ml-0 flex flex-wrap items-end gap-2 text-[clamp(1.85rem,9.5vw,2.4rem)] font-semibold sm:ml-[12%] sm:gap-5 sm:text-[clamp(2.6rem,12vw,9rem)] lg:ml-[24%]">
           <span>ABOUT</span>
           <span className="text-white">ME</span>
         </div>
@@ -80,7 +80,7 @@ function SectionHeading({ opened }) {
 function TestimonialList({ onOpen, cursorTarget, opened }) {
   return (
     <div
-      className="mt-14 px-6 pb-20 md:px-10 lg:px-14"
+      className="mt-10 px-5 pb-16 sm:mt-14 sm:px-6 sm:pb-20 md:px-10 lg:px-14"
       style={{
         opacity: opened ? 0 : 1,
         transform: opened ? "translate3d(0,30px,0)" : "translate3d(0,0,0)",
@@ -95,28 +95,37 @@ function TestimonialList({ onOpen, cursorTarget, opened }) {
             type="button"
             onClick={() => onOpen(item)}
             {...cursorTarget}
-            className="grid w-full grid-cols-1 gap-8 border-b border-white/10 py-10 text-left transition-colors duration-300 hover:text-white md:grid-cols-[0.18fr_0.18fr_0.9fr_1.2fr] md:items-center md:gap-10"
+            className="grid w-full grid-cols-1 gap-4 border-b border-white/10 py-7 text-left transition-colors duration-300 hover:text-white sm:gap-8 sm:py-10 md:grid-cols-[0.18fr_0.18fr_0.9fr_1.2fr] md:items-center md:gap-10"
           >
             <div className="hidden text-[2.6rem] leading-none tracking-[-0.06em] text-white/22 md:block">
               {item.id}
             </div>
 
-            <div className="hidden md:block">
+            <div className="flex items-start gap-4 md:block">
               {item.image ? (
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="h-[102px] w-[92px] object-cover"
+                  className="h-[72px] w-[64px] shrink-0 object-cover sm:h-[88px] sm:w-[80px] md:h-[102px] md:w-[92px]"
                 />
               ) : (
-                <div className="flex h-[102px] w-[92px] items-center justify-center bg-white/[0.06] text-[0.85rem] text-white/35">
+                <div className="flex h-[72px] w-[64px] shrink-0 items-center justify-center bg-white/[0.06] text-[0.85rem] text-white/35 sm:h-[88px] sm:w-[80px] md:h-[102px] md:w-[92px]">
                   {item.name.slice(0, 1)}
                 </div>
               )}
+
+              <div className="min-w-0 md:hidden">
+                <h3 className="text-[clamp(1.25rem,6vw,1.75rem)] leading-none tracking-[-0.04em] text-white/82">
+                  {item.name}
+                </h3>
+                <p className="mt-2 text-[0.8125rem] leading-6 text-white/42">
+                  {item.role}
+                </p>
+              </div>
             </div>
 
-            <div>
-              <h3 className="text-[2rem] leading-none tracking-[-0.05em] text-white/82 md:text-[3rem]">
+            <div className="hidden md:block">
+              <h3 className="text-[clamp(1.6rem,7vw,3rem)] leading-none tracking-[-0.05em] text-white/82">
                 {item.name}
               </h3>
               <p className="mt-3 max-w-[28rem] text-[1rem] leading-7 text-white/42">
@@ -124,7 +133,7 @@ function TestimonialList({ onOpen, cursorTarget, opened }) {
               </p>
             </div>
 
-            <div className="max-w-[42rem] text-[1.2rem] leading-[1.45] text-white/38 md:text-[1.35rem]">
+            <div className="max-w-[42rem] text-[0.875rem] leading-[1.45] text-white/38 sm:text-[1.2rem] md:text-[1.35rem]">
               {item.preview}
             </div>
           </button>
@@ -158,14 +167,14 @@ function TestimonialDetail({ item, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="mb-10 inline-flex items-center gap-2 text-[1rem] text-white/55 transition hover:text-white"
+          className="mb-8 inline-flex min-h-11 items-center gap-2 text-[0.875rem] text-white/55 transition hover:text-white sm:mb-10 sm:text-[1rem]"
         >
           <span>←</span>
           <span>Back</span>
         </button>
 
-        <div className="border-t border-white/10 pt-12">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.22fr_0.9fr_1.2fr] lg:gap-16">
+        <div className="border-t border-white/10 pt-8 sm:pt-12">
+          <div className="grid grid-cols-1 gap-8 sm:gap-12 lg:grid-cols-[0.22fr_0.9fr_1.2fr] lg:gap-16">
             <div>
               {item.image ? (
                 <img
@@ -181,15 +190,15 @@ function TestimonialDetail({ item, onClose }) {
             </div>
 
             <div>
-              <h3 className="text-[2.2rem] leading-none tracking-[-0.05em] text-white md:text-[3.2rem]">
+              <h3 className="text-[1.55rem] leading-none tracking-[-0.04em] text-white sm:text-[2.2rem] sm:tracking-[-0.05em] md:text-[3.2rem]">
                 {item.name}
               </h3>
-              <p className="mt-4 max-w-[28rem] text-[1.05rem] leading-8 text-white/48">
+              <p className="mt-3 max-w-[28rem] text-[0.875rem] leading-7 text-white/48 sm:mt-4 sm:text-[1.05rem] sm:leading-8">
                 {item.role}
               </p>
             </div>
 
-            <div className="max-w-[46rem] space-y-10 text-[1.3rem] leading-[1.55] text-white/58 md:text-[1.55rem]">
+            <div className="max-w-[46rem] space-y-6 text-[0.9375rem] leading-[1.55] text-white/58 sm:space-y-10 sm:text-[1.3rem] md:text-[1.55rem]">
               {item.full.map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}

@@ -14,13 +14,13 @@ export default function ProjectVisual({ project, compact = false }) {
         <div className="relative">
           <p
             className={`font-semibold tracking-[-0.04em] text-white/90 ${
-              compact ? "text-[0.7rem] leading-tight" : "text-[1.35rem] md:text-[1.8rem]"
+              compact ? "text-[0.65rem] leading-tight sm:text-[0.7rem]" : "text-[1.05rem] sm:text-[1.35rem] md:text-[1.8rem]"
             }`}
           >
             {project.title}
           </p>
           {!compact && project.eyebrow ? (
-            <p className="mt-1 text-[0.75rem] uppercase tracking-[0.16em] text-white/45">
+            <p className="mt-1 text-[0.65rem] uppercase tracking-[0.14em] text-white/45 sm:text-[0.75rem] sm:tracking-[0.16em]">
               {project.eyebrow}
             </p>
           ) : null}

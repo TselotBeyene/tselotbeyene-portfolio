@@ -23,8 +23,8 @@ function easeInOutCubic(t) {
 }
 
 function getSequence(progress) {
-  const reveal = clamp(mapRange(progress, 0.14, 0.24, 0, 1));
-  const sequenceStart = 0.2;
+  const reveal = clamp(mapRange(progress, 0.1, 0.2, 0, 1));
+  const sequenceStart = 0.18;
   const sequenceEnd = 0.96;
   const normalized = clamp(mapRange(progress, sequenceStart, sequenceEnd, 0, 1));
 
@@ -60,15 +60,23 @@ function ThumbnailRail({
   const upcomingProject = projects[toIndex];
   const displayProject = projects[activeIndex];
   const totalCount = projects.length.toString().padStart(2, "0");
+  // Counter + thumb only once the project stage has actually revealed.
+  const visible = clamp(mapRange(progress, 0.16, 0.24, 0, 1));
 
   return (
-    <div className="flex flex-col items-start">
+    <div
+      className="flex flex-col items-start"
+      style={{
+        opacity: visible,
+        pointerEvents: visible < 0.2 ? "none" : "auto",
+      }}
+    >
       <div className="mb-4 h-px w-[3.8rem] bg-white/12" />
       <button
         type="button"
         onClick={() => onOpenProject(displayProject.slug)}
         {...cursorTarget}
-        className="relative h-[2.4rem] w-[3.8rem] overflow-hidden border border-[var(--color-accent)] transition-all duration-500"
+        className="relative h-[3.6rem] w-[5.6rem] overflow-hidden border border-[var(--color-accent)] transition-all duration-500 sm:h-[4.2rem] sm:w-[6.6rem]"
       >
         {isTransitioning ? (
           <>
@@ -105,8 +113,8 @@ function ThumbnailRail({
           <ProjectVisual project={displayProject} compact />
         )}
       </button>
-      <div className="mt-[0.35rem] h-[3px] w-[3.7rem] bg-[var(--color-accent)]" />
-      <div className="mt-6 text-[1.1rem] tracking-[-0.04em] text-white/92">
+      <div className="mt-[0.35rem] h-[3px] w-[5.5rem] bg-[var(--color-accent)] sm:w-[6.5rem]" />
+      <div className="mt-6 text-[0.95rem] tracking-[-0.04em] text-white/92 sm:text-[1.1rem]">
         <span>{displayProject.id}</span>
         <span className="mx-2 text-white/28">/</span>
         <span className="text-white/28">{totalCount}</span>
@@ -122,37 +130,37 @@ function IntroOverlay({ progress }) {
 
   return (
     <div
-      className="absolute inset-0 z-20 px-8 pt-24 md:px-12 lg:px-16"
+      className="absolute inset-0 z-20 overflow-hidden px-5 pt-24 sm:px-8 md:px-12 lg:px-16"
       style={{
         opacity,
         transform: `translate3d(0, ${y}px, 0)`,
         pointerEvents: "none",
       }}
     >
-      <div className="absolute right-[8.8rem] top-[6.5rem] text-[1rem] text-white/28">
+      <div className="absolute right-5 top-24 text-[0.75rem] text-white/28 sm:right-8 sm:top-[6.5rem] sm:text-[1rem] lg:right-[8.8rem]">
         (Portfolio)
       </div>
 
-      <div className="pt-[3.5rem]">
-        <h2 className="text-[4.8rem] font-semibold leading-[0.86] tracking-[-0.09em] text-white/82 md:text-[7.5rem] lg:text-[10rem]">
+      <div className="pt-8 sm:pt-[3.5rem]">
+        <h2 className="text-[clamp(1.85rem,9.5vw,2.4rem)] font-semibold leading-[0.88] tracking-[-0.07em] text-white/82 sm:text-[clamp(2.6rem,12vw,10rem)] sm:leading-[0.86] sm:tracking-[-0.09em]">
           PROJECTS I
         </h2>
 
-        <h2 className="ml-[22%] text-[4.8rem] font-semibold leading-[0.86] tracking-[-0.09em] text-white/82 md:text-[7.5rem] lg:text-[10rem]">
+        <h2 className="ml-0 text-[clamp(1.85rem,9.5vw,2.4rem)] font-semibold leading-[0.88] tracking-[-0.07em] text-white/82 sm:ml-[12%] sm:text-[clamp(2.6rem,12vw,10rem)] sm:leading-[0.86] sm:tracking-[-0.09em] lg:ml-[22%]">
           WORKED ON
         </h2>
 
-        <div className="ml-[22%] mt-2 flex items-start gap-2">
-          <span className="text-[4rem] font-semibold leading-none tracking-[-0.08em] text-white/16 md:text-[6rem] lg:text-[7.8rem]">
+        <div className="ml-0 mt-2 flex items-start gap-2 sm:ml-[12%] lg:ml-[22%]">
+          <span className="text-[clamp(1.55rem,8vw,2rem)] font-semibold leading-none tracking-[-0.06em] text-white/16 sm:text-[clamp(2.2rem,10vw,7.8rem)] sm:tracking-[-0.08em]">
             16-25
           </span>
-          <span className="mt-1 text-[1.7rem] font-semibold text-[var(--color-accent)] md:text-[2.4rem]">
+          <span className="mt-1 text-[0.95rem] font-semibold text-[var(--color-accent)] sm:text-[1.7rem] md:text-[2.4rem]">
             ®
           </span>
         </div>
       </div>
 
-      <div className="absolute left-[22%] top-[45%] h-3 w-3 rounded-full bg-[var(--color-accent)]" />
+      <div className="absolute left-[12%] top-[52%] hidden h-3 w-3 rounded-full bg-[var(--color-accent)] sm:left-[22%] sm:top-[45%] lg:block" />
     </div>
   );
 }
@@ -169,7 +177,7 @@ function CenterVisual({
   const next = projects[toIndex];
   const hasNext = fromIndex < projects.length - 1;
   const containerY = lerp(24, 0, reveal);
-  const startScale = 0.12;
+  const startScale = 0.55;
   const t = easeInOutCubic(rawT);
 
   const [layout, setLayout] = useState({
@@ -453,6 +461,7 @@ export default function ProjectsSection({ onOpenProject }) {
   return (
     <section
       ref={sectionRef}
+      id="projects"
       className="relative h-[480vh] bg-[var(--color-bg-deep)] text-white"
     >
       <div className="sticky top-0 h-screen overflow-hidden bg-[var(--color-bg-deep)]">
@@ -460,6 +469,59 @@ export default function ProjectsSection({ onOpenProject }) {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:120px_100%] opacity-[0.04]" />
 
         <IntroOverlay progress={progress} />
+
+        {/* Mobile / tablet: show the same project visual stage */}
+        <div
+          className="relative z-20 flex h-full flex-col px-4 pb-4 pt-24 lg:hidden"
+          style={{
+            opacity: clamp(mapRange(progress, 0.1, 0.22, 0, 1)),
+          }}
+        >
+          <div className="relative min-h-0 flex-1 overflow-hidden">
+            <CenterVisual
+              progress={progress}
+              onOpenProject={onOpenProject}
+              cursorTarget={cursorTarget}
+            />
+          </div>
+
+          <div
+            className="shrink-0 pt-3"
+            style={{
+              opacity: clamp(mapRange(progress, 0.16, 0.26, 0, 1)),
+            }}
+          >
+            <div className="mb-2 text-xs text-white/55 sm:text-sm">
+              {projects[activeIndex].id} /{" "}
+              {projects.length.toString().padStart(2, "0")}
+              <span className="mx-2 text-white/20">·</span>
+              {projects[activeIndex].eyebrow}
+            </div>
+            <h3 className="text-[clamp(1.45rem,7vw,1.85rem)] font-semibold leading-[0.94] tracking-[-0.06em] text-white sm:text-[clamp(1.8rem,8vw,2.4rem)] sm:leading-[0.92] sm:tracking-[-0.07em]">
+              {projects[activeIndex].title}
+            </h3>
+            <p className="mt-2 line-clamp-3 max-w-[34rem] text-[0.8125rem] leading-[1.45] text-white/62 sm:mt-3 sm:text-[0.98rem]">
+              {projects[activeIndex].description}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {projects[activeIndex].lines.map((line) => (
+                <span
+                  key={line}
+                  className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[0.6875rem] text-white/65 sm:px-3 sm:text-[0.8rem]"
+                >
+                  {line}
+                </span>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => onOpenProject(projects[activeIndex].slug)}
+              className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 px-4 text-[0.8125rem] font-medium text-[var(--color-accent-bright)] sm:text-[0.95rem]"
+            >
+              View project details <span>↗</span>
+            </button>
+          </div>
+        </div>
 
         <div className="relative z-20 hidden h-full grid-cols-[minmax(12rem,16rem)_minmax(0,1fr)_minmax(18rem,22rem)] gap-8 px-10 pb-10 pt-28 lg:grid xl:px-14">
           <div className="flex min-h-0 flex-col justify-between py-6">
@@ -488,38 +550,6 @@ export default function ProjectsSection({ onOpenProject }) {
               cursorTarget={cursorTarget}
             />
           </div>
-        </div>
-
-        <div className="absolute bottom-8 left-6 right-6 z-40 lg:hidden">
-          <div className="mb-2 text-sm text-white/55">
-            {projects[activeIndex].id} /{" "}
-            {projects.length.toString().padStart(2, "0")}
-            <span className="mx-2 text-white/20">·</span>
-            {projects[activeIndex].eyebrow}
-          </div>
-          <h3 className="text-[2.4rem] font-semibold leading-[0.92] tracking-[-0.07em] text-white">
-            {projects[activeIndex].title}
-          </h3>
-          <p className="mt-3 max-w-[34rem] text-[0.98rem] leading-[1.45] text-white/62">
-            {projects[activeIndex].description}
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {projects[activeIndex].lines.map((line) => (
-              <span
-                key={line}
-                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[0.8rem] text-white/65"
-              >
-                {line}
-              </span>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={() => onOpenProject(projects[activeIndex].slug)}
-            className="mt-5 inline-flex items-center gap-2 text-[1rem] font-medium text-[var(--color-accent)] underline underline-offset-4"
-          >
-            View project details <span>↗</span>
-          </button>
         </div>
       </div>
     </section>

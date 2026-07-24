@@ -149,7 +149,7 @@ async function* streamOpenAiCompatible(cleaned, config) {
     },
     body: JSON.stringify({
       model: config.model,
-      temperature: 0.7,
+      temperature: 0.45,
       max_tokens: 520,
       stream: true,
       messages: [
@@ -204,7 +204,7 @@ async function* streamAnthropic(cleaned, config) {
     body: JSON.stringify({
       model: config.model,
       max_tokens: 520,
-      temperature: 0.7,
+      temperature: 0.45,
       system: buildSystemPrompt(),
       stream: true,
       messages: cleaned.map((message) => ({
@@ -321,7 +321,7 @@ async function completeOneProvider(cleaned, config) {
       body: JSON.stringify({
         model: config.model,
         max_tokens: 520,
-        temperature: 0.7,
+        temperature: 0.45,
         system: buildSystemPrompt(),
         messages: cleaned.map((message) => ({
           role: message.role === "assistant" ? "assistant" : "user",
@@ -355,7 +355,7 @@ async function completeOneProvider(cleaned, config) {
     },
     body: JSON.stringify({
       model: config.model,
-      temperature: 0.7,
+      temperature: 0.45,
       max_tokens: 520,
       messages: [
         { role: "system", content: buildSystemPrompt() },

@@ -2,7 +2,7 @@ function HeroRight() {
   return (
     <aside className="flex h-full flex-col justify-between py-28 pl-0 pr-0">
       <div className="flex h-full flex-col justify-between">
-        <div className="mt-30">
+        <div className="mt-8 lg:mt-28">
           <div className="mb-10">
             <div className="space-y-4 text-base font-thin text-gray-400">
               <div className="border-t border-white/10 pt-9">Full Stack Development</div>
@@ -14,7 +14,7 @@ function HeroRight() {
           <div className="border-t border-white/10 pt-6">
             <a
               href="mailto:tselotbeyene70@gmail.com"
-              className="inline-block text-white text-xl underline underline-offset-4 transition-colors hover:text-[var(--color-accent-bright)]"
+              className="inline-flex min-h-11 items-center text-xl text-white underline underline-offset-4 transition-colors hover:text-[var(--color-accent-bright)]"
             >
               How can I help?
             </a>
@@ -32,7 +32,7 @@ function HeroRight() {
             <p className="mb-4 text-xs uppercase tracking-[2px] text-white/40">
               Core Stack
             </p>
-            <div className="flex gap-6 text-sm text-white/30">
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/30">
               <div>Java</div>
               <div>Spring Boot</div>
               <div>Docker</div>

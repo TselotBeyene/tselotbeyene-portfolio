@@ -37,7 +37,7 @@ function AgentAvatar({ reducedMotion, speaking }) {
   return (
     <div className="relative mx-auto w-fit">
       <motion.div
-        className="absolute -inset-6 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.35)_0%,transparent_70%)] blur-2xl"
+        className="absolute -inset-3 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.35)_0%,transparent_70%)] blur-xl sm:-inset-6 sm:blur-2xl"
         animate={
           reducedMotion
             ? { opacity: 0.55 }
@@ -55,9 +55,9 @@ function AgentAvatar({ reducedMotion, speaking }) {
         animate={reducedMotion ? undefined : { rotate: 360 }}
         transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
       >
-        <div className="rounded-full bg-[var(--color-bg-base)] p-1">
+        <div className="rounded-full bg-[var(--color-bg-base)] p-0.5 sm:p-1">
           <motion.div
-            className="relative h-28 w-28 overflow-hidden rounded-full md:h-36 md:w-36"
+            className="relative h-16 w-16 overflow-hidden rounded-full sm:h-24 sm:w-24 md:h-32 md:w-32"
             animate={reducedMotion ? undefined : { y: [0, -6, 0] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
           >
@@ -72,13 +72,13 @@ function AgentAvatar({ reducedMotion, speaking }) {
       </motion.div>
 
       <motion.div
-        className="absolute -right-1 top-3 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/50 px-2.5 py-1 text-[0.7rem] text-white/80 backdrop-blur-md"
+        className="absolute -right-1 top-0 flex items-center gap-1 rounded-full border border-white/10 bg-black/50 px-2 py-0.5 text-[0.62rem] text-white/80 backdrop-blur-md sm:right-0 sm:top-2 sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[0.7rem]"
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <span className="relative flex h-2 w-2">
+        <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent-bright)]" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--color-accent-bright)] sm:h-2 sm:w-2" />
         </span>
         Online
       </motion.div>
@@ -102,7 +102,7 @@ function MessageActions({ content, onRegenerate, showRegenerate }) {
             setCopied(false);
           }
         }}
-        className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.72rem] text-white/45 transition-colors hover:text-white"
+        className="inline-flex min-h-9 items-center rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[0.72rem] text-white/45 transition-colors hover:text-white"
         data-cursor-label="Copy"
       >
         {copied ? "Copied" : "Copy"}
@@ -111,7 +111,7 @@ function MessageActions({ content, onRegenerate, showRegenerate }) {
         <button
           type="button"
           onClick={onRegenerate}
-          className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.72rem] text-white/45 transition-colors hover:text-white"
+          className="inline-flex min-h-9 items-center rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[0.72rem] text-white/45 transition-colors hover:text-white"
           data-cursor-label="Retry"
         >
           Regenerate
@@ -317,11 +317,11 @@ function AskMeAnythingPage() {
   return (
     <main
       id="ask-me-anything"
-      className="relative flex min-h-screen flex-col overflow-x-hidden bg-[var(--color-bg-base)] pt-24 pb-6 md:pt-28 md:pb-8"
+      className="relative flex min-h-[100dvh] flex-col overflow-x-hidden bg-[var(--color-bg-base)] pt-16 pb-4 sm:pt-24 sm:pb-6 md:pt-28 md:pb-8"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-[var(--color-glow-primary)] blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[var(--color-glow-warm)] blur-3xl" />
+        <div className="absolute left-1/2 top-16 h-40 w-40 -translate-x-1/2 rounded-full bg-[var(--color-glow-primary)] blur-3xl sm:top-24 sm:h-72 sm:w-72" />
+        <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-[var(--color-glow-warm)] blur-3xl sm:h-80 sm:w-80" />
         <div
           className="absolute inset-0 opacity-[0.035]"
           style={{
@@ -332,20 +332,20 @@ function AskMeAnythingPage() {
         />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-5xl flex-1 flex-col gap-5 px-5 md:gap-6 md:px-8 lg:px-10">
-        <section className="grid shrink-0 items-center gap-5 lg:grid-cols-[auto_1fr] lg:gap-10">
+      <div className="relative mx-auto flex w-full max-w-5xl min-w-0 flex-1 flex-col gap-3 px-4 sm:gap-5 sm:px-5 md:gap-6 md:px-8 lg:px-10">
+        <section className="grid shrink-0 items-center gap-3 sm:gap-5 lg:grid-cols-[auto_1fr] lg:gap-10">
           <AgentAvatar reducedMotion={reducedMotion} speaking={busy} />
 
           <div className="text-center lg:text-left">
             <motion.p
-              className="text-[0.75rem] uppercase tracking-[0.22em] text-[var(--color-accent-bright)]"
+              className="text-[0.65rem] uppercase tracking-[0.18em] text-[var(--color-accent-bright)] sm:text-[0.75rem] sm:tracking-[0.22em]"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
             >
               Portfolio twin
             </motion.p>
             <motion.h1
-              className="mt-2 text-[clamp(2rem,5vw,3.4rem)] font-semibold leading-[1.05] tracking-tight text-white"
+              className="mt-1 text-[1.35rem] font-semibold leading-[1.1] tracking-tight text-white sm:mt-2 sm:text-[clamp(2rem,5vw,3.4rem)] sm:leading-[1.05]"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 }}
@@ -353,7 +353,7 @@ function AskMeAnythingPage() {
               Ask Me Anything
             </motion.h1>
             <motion.p
-              className="mt-3 max-w-xl text-[0.98rem] leading-7 text-white/55 lg:mx-0 mx-auto"
+              className="mx-auto mt-2 max-w-xl text-[0.75rem] leading-5 text-white/55 sm:mt-3 sm:text-[0.98rem] sm:leading-7 lg:mx-0"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -365,22 +365,24 @@ function AskMeAnythingPage() {
         </section>
 
         <motion.section
-          className="relative flex h-[min(62vh,36rem)] min-h-[22rem] w-full shrink-0 flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.035] shadow-[0_30px_100px_rgba(0,0,0,0.35)] backdrop-blur-2xl md:h-[min(64vh,40rem)]"
+          className="relative flex min-h-[22rem] w-full min-w-0 flex-1 flex-col overflow-hidden rounded-[1.25rem] border border-white/10 bg-white/[0.035] shadow-[0_30px_100px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:h-[min(58dvh,36rem)] sm:min-h-[22rem] sm:flex-none sm:rounded-[1.75rem] md:h-[min(64vh,40rem)]"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
         >
-          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-3 md:px-5">
-            <div className="flex items-center gap-2 text-[0.85rem] text-white/55">
-              <span className="relative flex h-2 w-2">
-                {agentStatus.online ? (
-                  <>
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-50" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent-bright)]" />
-                  </>
-                ) : (
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-white/35" />
-                )}
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-3 py-2.5 sm:px-4 sm:py-3 md:px-5">
+            <div className="min-w-0 flex-1 truncate text-[0.7rem] text-white/55 sm:text-[0.85rem]">
+              <span className="mr-2 inline-flex align-middle">
+                <span className="relative flex h-2 w-2">
+                  {agentStatus.online ? (
+                    <>
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-50" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent-bright)]" />
+                    </>
+                  ) : (
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-white/35" />
+                  )}
+                </span>
               </span>
               {agentStatus.online
                 ? `Online · ${agentStatus.message}`
@@ -390,7 +392,7 @@ function AskMeAnythingPage() {
               <button
                 type="button"
                 onClick={clearConversation}
-                className="rounded-full border border-white/10 px-3 py-1.5 text-[0.78rem] text-white/45 transition-colors hover:border-white/25 hover:text-white"
+                className="inline-flex min-h-9 shrink-0 items-center rounded-full border border-white/10 px-3 py-1.5 text-[0.72rem] text-white/45 transition-colors hover:border-white/25 hover:text-white sm:text-[0.78rem]"
                 data-cursor-label="Clear"
               >
                 Clear chat
@@ -400,24 +402,24 @@ function AskMeAnythingPage() {
 
           <div
             ref={listRef}
-            className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-5 md:px-6"
+            className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3 sm:space-y-4 sm:px-4 sm:py-5 md:px-6"
           >
             {!started && (
               <motion.div
-                className="mx-auto max-w-xl rounded-3xl border border-white/10 bg-black/20 px-5 py-6 text-center"
+                className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-black/20 px-3.5 py-4 text-center sm:rounded-3xl sm:px-5 sm:py-6"
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
               >
-                <p className="whitespace-pre-line text-[1.02rem] leading-7 text-white/70">
+                <p className="whitespace-pre-line text-[0.75rem] leading-5 text-white/70 sm:text-[1.02rem] sm:leading-7">
                   {EMPTY_COPY}
                 </p>
-                <div className="mt-6 flex flex-wrap justify-center gap-2">
+                <div className="mt-4 flex flex-wrap justify-center gap-1.5 sm:mt-6 sm:gap-2">
                   {SUGGESTIONS.map((suggestion) => (
                     <button
                       key={suggestion}
                       type="button"
                       onClick={() => send(suggestion)}
-                      className="rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-2 text-left text-[0.82rem] text-white/60 transition-all hover:border-[var(--color-accent)]/45 hover:bg-[var(--color-accent)]/10 hover:text-white"
+                      className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-left text-[0.72rem] text-white/60 transition-all hover:border-[var(--color-accent)]/45 hover:bg-[var(--color-accent)]/10 hover:text-white sm:px-3.5 sm:py-2 sm:text-[0.82rem]"
                       data-cursor-label="Ask"
                     >
                       {suggestion}
@@ -443,11 +445,11 @@ function AskMeAnythingPage() {
                   >
                     <div className={`max-w-[min(100%,36rem)] ${isUser ? "" : "w-full"}`}>
                       {!isUser && (
-                        <div className="mb-2 flex items-center gap-2 text-[0.75rem] text-white/35">
+                        <div className="mb-1.5 flex items-center gap-2 text-[0.68rem] text-white/35 sm:mb-2 sm:text-[0.75rem]">
                           <img
                             src={portrait}
                             alt=""
-                            className="h-5 w-5 rounded-full object-cover object-[center_18%]"
+                            className="h-4 w-4 rounded-full object-cover object-[center_18%] sm:h-5 sm:w-5"
                           />
                           Tselot&apos;s twin
                           {message.streaming && (
@@ -456,7 +458,7 @@ function AskMeAnythingPage() {
                         </div>
                       )}
                       <div
-                        className={`rounded-3xl px-4 py-3 text-[0.98rem] leading-7 ${
+                        className={`rounded-2xl px-3 py-2.5 text-[0.8125rem] leading-5 sm:rounded-3xl sm:px-4 sm:py-3 sm:text-[0.98rem] sm:leading-7 ${
                           isUser
                             ? "bg-[var(--color-accent)] text-[#04150e]"
                             : "border border-white/10 bg-white/[0.04] text-white/80"
@@ -481,13 +483,13 @@ function AskMeAnythingPage() {
             </AnimatePresence>
 
             {busy && messages.at(-1)?.role === "assistant" && !messages.at(-1)?.content && (
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] px-4 py-3 w-fit">
+              <div className="w-fit rounded-3xl border border-white/10 bg-white/[0.03] px-4 py-3">
                 <TypingDots />
               </div>
             )}
 
             {error && (
-              <div className="rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-[0.9rem] text-red-100/90">
+              <div className="rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-[0.82rem] text-red-100/90 sm:text-[0.9rem]">
                 {error}
               </div>
             )}
@@ -499,7 +501,7 @@ function AskMeAnythingPage() {
                     key={item}
                     type="button"
                     onClick={() => send(item)}
-                    className="rounded-full border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/5 px-3 py-1.5 text-[0.8rem] text-[var(--color-accent-bright)] transition-colors hover:bg-[var(--color-accent)]/15"
+                    className="rounded-full border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/5 px-3 py-1.5 text-[0.72rem] text-[var(--color-accent-bright)] transition-colors hover:bg-[var(--color-accent)]/15 sm:text-[0.8rem]"
                     data-cursor-label="Ask"
                   >
                     {item}
@@ -511,32 +513,32 @@ function AskMeAnythingPage() {
 
           <form
             id={formId}
-            className="shrink-0 border-t border-white/10 bg-black/20 p-3 md:p-4"
+            className="shrink-0 border-t border-white/10 bg-black/20 p-2.5 sm:p-3 md:p-4"
             onSubmit={(event) => {
               event.preventDefault();
               send(input);
             }}
           >
-            <div className="flex items-end gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-2 focus-within:border-[var(--color-accent)]/45">
+            <div className="flex min-w-0 items-end gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-1.5 focus-within:border-[var(--color-accent)]/45 sm:p-2">
               <textarea
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={onKeyDown}
                 rows={1}
-                placeholder="Ask something fun — projects, opinions, how to reach me…"
-                className="max-h-36 min-h-[2.75rem] flex-1 resize-none bg-transparent px-3 py-2.5 text-[0.98rem] text-white outline-none placeholder:text-white/30"
+                placeholder="Ask about projects, stack, or how to reach me…"
+                className="max-h-28 min-h-10 min-w-0 flex-1 resize-none bg-transparent px-2 py-2 text-[0.8125rem] text-white outline-none placeholder:text-white/30 sm:min-h-11 sm:px-3 sm:py-2.5 sm:text-[0.98rem]"
                 disabled={busy}
               />
               <button
                 type="submit"
                 disabled={busy || !input.trim()}
-                className="rounded-xl bg-[var(--color-accent)] px-4 py-2.5 text-[0.92rem] font-medium text-[#04150e] transition-opacity disabled:opacity-40"
+                className="inline-flex min-h-10 shrink-0 items-center rounded-xl bg-[var(--color-accent)] px-3.5 py-2 text-[0.82rem] font-medium text-[#04150e] transition-opacity disabled:opacity-40 sm:min-h-11 sm:px-4 sm:py-2.5 sm:text-[0.92rem]"
                 data-cursor-label="Send"
               >
                 Send
               </button>
             </div>
-            <p className="mt-2 px-1 text-[0.72rem] text-white/30">
+            <p className="mt-2 hidden px-1 text-[0.72rem] text-white/30 sm:block">
               Enter to send · Shift + Enter for a new line
             </p>
           </form>

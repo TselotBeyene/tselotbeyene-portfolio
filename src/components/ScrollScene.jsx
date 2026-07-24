@@ -13,14 +13,104 @@ function mapRange(value, inMin, inMax, outMin, outMax) {
   return outMin + (outMax - outMin) * t;
 }
 
+/** Hermite smoothstep — stable for scroll-linked motion. */
+function smoothstep(t) {
+  const x = clamp(t);
+  return x * x * (3 - 2 * x);
+}
+
+function roundTo(value, steps = 1000) {
+  return Math.round(value * steps) / steps;
+}
+
+function getCameraStyles(progress, isMobile, viewportWidth) {
+  const cameraT = smoothstep(mapRange(progress, 0, 0.58, 0, 1));
+
+  const scaleFrom = isMobile ? 0.72 : 0.85;
+  const scaleTo = isMobile ? 2.2 : 2.55;
+  const imageScale = roundTo(scaleFrom + (scaleTo - scaleFrom) * cameraT);
+
+  const panTo = isMobile
+    ? viewportWidth * 0.68
+    : Math.max(viewportWidth * 0.52, 580);
+  const imageX = roundTo(panTo * cameraT, 100);
+  const imageYBase = isMobile ? -40 : -280;
+  const imageY = roundTo(imageYBase - 24 * cameraT, 100);
+
+  const heroOpacity = 1 - smoothstep(mapRange(progress, 0.06, 0.36, 0, 1));
+  const heroY = roundTo(-160 * smoothstep(mapRange(progress, 0.04, 0.4, 0, 1)), 100);
+
+  const imageDimOpacity = 0.08 + 0.82 * smoothstep(mapRange(progress, 0.18, 0.42, 0, 1));
+  const blackStageOpacity = smoothstep(mapRange(progress, 0.24, 0.44, 0, 1)) * 0.96;
+  const imageOpacity = 1 - smoothstep(mapRange(progress, 0.32, 0.52, 0, 1));
+
+  const introEnterOpacity = smoothstep(mapRange(progress, 0.28, 0.42, 0, 1));
+  const introExitOpacity = 1 - mapRange(progress, 0.92, 1, 0, 1);
+  const introOpacity = introEnterOpacity * introExitOpacity;
+  const introEnterY = mapRange(progress, 0.28, 0.42, 48, 0);
+  const introExitY = mapRange(progress, 0.9, 1, 0, -120);
+  const introY = roundTo(introEnterY + introExitY, 100);
+
+  const readingProgress = mapRange(progress, 0.38, 0.9, 0, 1);
+
+  return {
+    heroOpacity,
+    heroY,
+    imageScale,
+    imageX,
+    imageY,
+    imageOpacity,
+    introOpacity,
+    introY,
+    imageDimOpacity,
+    blackStageOpacity,
+    readingProgress,
+  };
+}
+
 function ScrollScene({ heroHidden = false }) {
   const sceneRef = useRef(null);
+  const panRef = useRef(null);
+  const scaleRef = useRef(null);
+  const layerRef = useRef(null);
   const [progress, setProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1280,
+  );
   const targetRef = useRef(0);
   const currentRef = useRef(0);
   const rafRef = useRef(0);
+  const uiBucketRef = useRef(-1);
+  const isMobileRef = useRef(false);
+  const viewportWidthRef = useRef(viewportWidth);
 
   useEffect(() => {
+    const syncViewport = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      isMobileRef.current = mobile;
+      setViewportWidth(window.innerWidth);
+      viewportWidthRef.current = window.innerWidth;
+    };
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+    return () => window.removeEventListener("resize", syncViewport);
+  }, []);
+
+  useEffect(() => {
+    const applyPortrait = (styles) => {
+      if (panRef.current) {
+        panRef.current.style.transform = `translate3d(-50%, -50%, 0) translate3d(${styles.imageX}px, ${styles.imageY}px, 0)`;
+      }
+      if (scaleRef.current) {
+        scaleRef.current.style.transform = `scale(${styles.imageScale})`;
+      }
+      if (layerRef.current) {
+        layerRef.current.style.opacity = heroHidden ? "0" : String(styles.imageOpacity);
+      }
+    };
+
     const handleScroll = () => {
       const el = sceneRef.current;
       if (!el) return;
@@ -28,22 +118,34 @@ function ScrollScene({ heroHidden = false }) {
       const rect = el.getBoundingClientRect();
       const total = el.offsetHeight - window.innerHeight;
       const scrolled = clamp(-rect.top, 0, total);
-      const next = total > 0 ? scrolled / total : 0;
-      targetRef.current = next;
+      targetRef.current = total > 0 ? scrolled / total : 0;
     };
 
     const tick = () => {
-      currentRef.current += (targetRef.current - currentRef.current) * 0.12;
+      currentRef.current += (targetRef.current - currentRef.current) * 0.16;
 
-      if (Math.abs(targetRef.current - currentRef.current) < 0.0005) {
+      if (Math.abs(targetRef.current - currentRef.current) < 0.00035) {
         currentRef.current = targetRef.current;
       }
 
-      setProgress(currentRef.current);
+      const p = currentRef.current;
+      const styles = getCameraStyles(p, isMobileRef.current, viewportWidthRef.current);
+
+      // Portrait updates on the compositor path — no React re-render per frame.
+      applyPortrait(styles);
+
+      // Fine bucket → intro/hero translate stays sub-pixel smooth while scrolling.
+      const bucket = Math.round(p * 1000);
+      if (bucket !== uiBucketRef.current) {
+        uiBucketRef.current = bucket;
+        setProgress(p);
+      }
+
       rafRef.current = requestAnimationFrame(tick);
     };
 
     handleScroll();
+    applyPortrait(getCameraStyles(0, isMobileRef.current, viewportWidthRef.current));
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll);
     rafRef.current = requestAnimationFrame(tick);
@@ -53,53 +155,26 @@ function ScrollScene({ heroHidden = false }) {
       window.removeEventListener("resize", handleScroll);
       cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [heroHidden]);
 
-  const styles = useMemo(() => {
-    const heroOpacity = mapRange(progress, 0.14, 0.34, 1, 0);
-    const heroY = mapRange(progress, 0.12, 0.38, 0, -120);
-
-    const imageScale = mapRange(progress, 0, 0.82, 1, 2.5);
-    const imageX = mapRange(progress, 0.34, 0.9, 0, 520);
-    const imageY = -280;
-
-    const introEnterOpacity = mapRange(progress, 0.2, 0.32, 0, 1);
-    const introExitOpacity = 1 - mapRange(progress, 0.92, 0.99, 0, 1);
-    const introOpacity = introEnterOpacity * introExitOpacity;
-    // Enter from below, then stay put while reading, only exit near the end.
-    const introEnterY = mapRange(progress, 0.2, 0.32, 70, 0);
-    const introExitY = mapRange(progress, 0.9, 1, 0, -160);
-    const introY = introEnterY + introExitY;
-
-    const imageDimOpacity = mapRange(progress, 0.3, 0.62, 0.08, 0.82);
-    const blackStageOpacity = mapRange(progress, 0.32, 0.62, 0, 0.9);
-    // Long reading window so each word has enough scroll distance.
-    const readingProgress = mapRange(progress, 0.3, 0.9, 0, 1);
-
-    return {
-      heroOpacity,
-      heroY,
-      imageScale,
-      imageX,
-      imageY,
-      introOpacity,
-      introY,
-      imageDimOpacity,
-      blackStageOpacity,
-      readingProgress,
-    };
-  }, [progress]);
+  const styles = useMemo(
+    () => getCameraStyles(progress, isMobile, viewportWidth),
+    [progress, isMobile, viewportWidth],
+  );
 
   return (
-    <section ref={sceneRef} className="relative h-[1000vh] bg-[var(--color-bg-base)]">
-      <div className="sticky top-0 h-screen overflow-hidden bg-[var(--color-bg-base)]">
+    <section
+      ref={sceneRef}
+      className="relative bg-[var(--color-bg-base)]"
+      style={{ height: isMobile ? "780vh" : "1000vh" }}
+    >
+      <div className="sticky top-0 h-[100dvh] overflow-hidden bg-[var(--color-bg-base)] lg:h-screen">
         <div className="absolute inset-0 z-0 bg-[var(--color-bg-base)]" />
 
-        <div
-          className="absolute inset-0 z-[1] overflow-hidden"
-          style={{ opacity: heroHidden ? 0 : 1 }}
-        >
+        <div ref={layerRef} className="absolute inset-0 z-[1] overflow-hidden">
           <HeroPortrait
+            panRef={panRef}
+            scaleRef={scaleRef}
             imageX={styles.imageX}
             imageY={styles.imageY}
             imageScale={styles.imageScale}
@@ -107,9 +182,10 @@ function ScrollScene({ heroHidden = false }) {
           />
         </div>
 
-        <div className="absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(5,5,5,0.95)_0%,rgba(5,5,5,0.72)_16%,rgba(5,5,5,0.10)_44%,rgba(5,5,5,0.20)_60%,rgba(5,5,5,0.58)_78%,rgba(5,5,5,0.92)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[linear-gradient(90deg,rgba(5,5,5,0.95)_0%,rgba(5,5,5,0.72)_16%,rgba(5,5,5,0.10)_44%,rgba(5,5,5,0.20)_60%,rgba(5,5,5,0.58)_78%,rgba(5,5,5,0.92)_100%)] lg:block" />
+        <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(180deg,rgba(5,5,5,0.5)_0%,rgba(5,5,5,0.12)_32%,rgba(5,5,5,0.45)_62%,rgba(5,5,5,0.94)_100%)] lg:hidden" />
 
-        <div className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_63%_18%,var(--color-glow-primary),transparent_18%),radial-gradient(circle_at_61%_50%,var(--color-glow-secondary),transparent_24%)]" />
+        <div className="pointer-events-none absolute inset-0 z-[2] bg-[radial-gradient(circle_at_63%_18%,var(--color-glow-primary),transparent_18%),radial-gradient(circle_at_61%_50%,var(--color-glow-secondary),transparent_24%)]" />
 
         <div
           className="absolute inset-0 z-[3] bg-[rgba(5,5,5,0.78)]"
@@ -125,26 +201,26 @@ function ScrollScene({ heroHidden = false }) {
           className="absolute inset-0 z-10"
           style={{
             opacity: styles.heroOpacity,
-            transform: `translateY(${styles.heroY}px)`,
+            transform: `translate3d(0, ${styles.heroY}px, 0)`,
+            pointerEvents: styles.heroOpacity < 0.05 ? "none" : "auto",
           }}
         >
-          <div className="flex h-full">
-            <div className="w-[58%]">
+          <div className="flex h-full flex-col lg:flex-row">
+            <div className="min-h-0 w-full flex-1 lg:w-[58%]">
               <HeroLeft />
             </div>
 
-            <div className="ml-auto w-[28%] min-w-[300px] max-w-[430px] pl-0 pr-8 lg:pr-14">
+            <div className="ml-auto hidden w-[28%] min-w-0 max-w-[430px] pl-0 pr-8 lg:block lg:min-w-[280px] lg:pr-14">
               <HeroRight />
             </div>
           </div>
         </div>
 
         <div
-          className="absolute inset-0 z-20"
+          className="pointer-events-none absolute inset-0 z-20"
           style={{
             opacity: styles.introOpacity,
-            transform: `translateY(${styles.introY}px)`,
-            pointerEvents: styles.introOpacity > 0.2 ? "auto" : "none",
+            transform: `translate3d(0, ${styles.introY}px, 0)`,
           }}
         >
           <IntroSection progress={styles.readingProgress} />
