@@ -16,7 +16,7 @@ export default function HeroPortrait({
       <div
         ref={panRef}
         id={frameId}
-        className="absolute left-[50%] top-[50%] h-[100dvh] w-[min(70vw,340px)] bg-transparent sm:w-[min(48vw,460px)] lg:h-[100vh] lg:w-[32vw] lg:min-w-[360px] lg:max-w-[520px]"
+        className="absolute left-[50%] top-[50%] h-[100dvh] w-[min(70vw,340px)] bg-transparent max-sm:w-[min(112vw,520px)] sm:w-[min(48vw,460px)] lg:h-[100vh] lg:w-[38vw] lg:min-w-[420px] lg:max-w-[600px]"
         style={{
           transform: `translate3d(-50%, -50%, 0) translate3d(${imageX}px, ${imageY}px, 0)`,
           willChange: "transform",

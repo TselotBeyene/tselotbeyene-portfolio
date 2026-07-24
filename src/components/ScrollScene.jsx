@@ -26,7 +26,9 @@ function roundTo(value, steps = 1000) {
 function getCameraStyles(progress, isMobile, viewportWidth) {
   const cameraT = smoothstep(mapRange(progress, 0, 0.58, 0, 1));
 
-  const scaleFrom = isMobile ? 0.72 : 0.85;
+  // Phones start larger; desktop also gets a bigger starting portrait.
+  const isPhone = isMobile && viewportWidth < 640;
+  const scaleFrom = isPhone ? 0.92 : isMobile ? 0.72 : 1.18;
   const scaleTo = isMobile ? 2.2 : 2.55;
   const imageScale = roundTo(scaleFrom + (scaleTo - scaleFrom) * cameraT);
 

@@ -99,8 +99,9 @@ function IntroSection({ progress = 0 }) {
   const readingPhase = mapRange(progress, 0, 0.58, 0, 1);
   const activeWordIndex = Math.floor(readingPhase * (introWords.length - 1));
 
+  // Gentler on mobile so centered copy isn't yanked to the top while reading.
+  const mobileCopyY = mapRange(progress, 0.42, 0.62, 0, -72);
   const mobileCopyOpacity = 1 - mapRange(progress, 0.52, 0.66, 0, 1);
-  const mobileCopyY = mapRange(progress, 0, 0.58, 0, -200);
   const mobileLogosOpacity = mapRange(progress, 0.56, 0.7, 0, 1);
   const mobileLogosY = mapRange(progress, 0.56, 0.78, 56, 0);
 
@@ -116,10 +117,10 @@ function IntroSection({ progress = 0 }) {
       className="relative h-[100dvh] overflow-hidden lg:h-screen"
       style={{ isolation: "isolate" }}
     >
-      {/* ——— Mobile: one panel at a time ——— */}
+      {/* ——— Mobile / tablet panel; phones are vertically centered ——— */}
       <div className="relative h-full lg:hidden">
         <div
-          className="absolute inset-0 flex flex-col px-5 pb-10 pt-24"
+          className="absolute inset-0 flex flex-col justify-center px-5 py-16 sm:justify-start sm:px-5 sm:pb-10 sm:pt-24"
           style={{
             opacity: mobileCopyOpacity,
             transform: `translate3d(0, ${mobileCopyY}px, 0)`,
@@ -127,9 +128,9 @@ function IntroSection({ progress = 0 }) {
             willChange: "transform, opacity",
           }}
         >
-          <p className="mb-2.5 shrink-0 text-[0.75rem] text-white/42">(Intro)</p>
-          <div className="min-h-0 flex-1 overflow-hidden">
-            <p className="text-[0.875rem] leading-[1.55] tracking-[-0.02em] text-white">
+          <div className="mx-auto w-full max-w-[34rem] text-center sm:mx-0 sm:max-w-none sm:text-left">
+            <p className="mb-3 text-[0.75rem] text-white/42">(Intro)</p>
+            <p className="max-h-[min(52dvh,22rem)] overflow-hidden text-[0.875rem] leading-[1.55] tracking-[-0.02em] text-white sm:max-h-none">
               {introWords.map((word, index) => {
                 const revealed = index <= activeWordIndex;
                 return (
@@ -144,17 +145,17 @@ function IntroSection({ progress = 0 }) {
                 );
               })}
             </p>
+            <p
+              className="mt-6 text-[0.6875rem] text-white/35"
+              style={{ opacity: mapRange(progress, 0.35, 0.5, 0, 1) }}
+            >
+              Keep scrolling for companies
+            </p>
           </div>
-          <p
-            className="shrink-0 pt-4 text-center text-[0.6875rem] text-white/35"
-            style={{ opacity: mapRange(progress, 0.35, 0.5, 0, 1) }}
-          >
-            Keep scrolling for companies
-          </p>
         </div>
 
         <div
-          className="absolute inset-0 flex flex-col justify-center px-5 pb-10 pt-24"
+          className="absolute inset-0 flex flex-col justify-center px-5 py-16 sm:px-5 sm:pb-10 sm:pt-24"
           style={{
             opacity: mobileLogosOpacity,
             transform: `translate3d(0, ${mobileLogosY}px, 0)`,
@@ -162,12 +163,14 @@ function IntroSection({ progress = 0 }) {
             willChange: "transform, opacity",
           }}
         >
-          <div className="mb-4 h-px w-14 bg-white/10" />
-          <h2 className="max-w-[16rem] text-[1.15rem] leading-[1.15] tracking-tight text-white">
-            Industry leaders I worked for
-          </h2>
-          <div className="mt-6 w-full max-w-[34rem]">
-            <LogoGrid />
+          <div className="mx-auto w-full max-w-[34rem] sm:mx-0">
+            <div className="mb-4 h-px w-14 bg-white/10" />
+            <h2 className="max-w-[16rem] text-[1.15rem] leading-[1.15] tracking-tight text-white">
+              Industry leaders I worked for
+            </h2>
+            <div className="mt-6 w-full">
+              <LogoGrid />
+            </div>
           </div>
         </div>
       </div>
@@ -208,15 +211,20 @@ function IntroSection({ progress = 0 }) {
           >
             <div className="mb-28">
               <p className="mb-8 text-[1.1rem] text-white/42">(Intro)</p>
-              <div className="relative flex flex-wrap gap-x-[0.3em] gap-y-[0.15em] text-[2.5rem] leading-[1.2] tracking-[-0.05em] text-white">
+              <div className="relative flex flex-wrap gap-x-[0.3em] gap-y-[0.15em] text-[1.5rem] leading-[1.2] tracking-[-0.05em] text-white md:text-[2.5rem]">
                 {introWords.map((word, index) => {
-                  const { opacity } = getWordStyles(index, desktopWordIndex);
+                  const { opacity, blur } = getWordStyles(index, desktopWordIndex);
 
                   return (
                     <span
                       key={index}
-                      className="inline-block transition-opacity duration-300 ease-out"
-                      style={{ opacity }}
+                      className="inline-block transition-[opacity,filter,transform] duration-300 ease-out"
+                      style={{
+                        opacity,
+                        filter: blur > 0 ? `blur(${blur}px)` : "none",
+                        transform:
+                          index === desktopWordIndex ? "scale(1.02)" : "scale(1)",
+                      }}
                     >
                       {word}
                     </span>
