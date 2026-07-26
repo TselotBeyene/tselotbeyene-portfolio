@@ -26,9 +26,9 @@ function roundTo(value, steps = 1000) {
 function getCameraStyles(progress, isMobile, viewportWidth) {
   const cameraT = smoothstep(mapRange(progress, 0, 0.58, 0, 1));
 
-  // Phones start larger; desktop also gets a bigger starting portrait.
+  // Phones start larger and sit lower so the face clears the title.
   const isPhone = isMobile && viewportWidth < 640;
-  const scaleFrom = isPhone ? 0.92 : isMobile ? 0.72 : 1.18;
+  const scaleFrom = isPhone ? 0.98 : isMobile ? 0.72 : 1.18;
   const scaleTo = isMobile ? 2.2 : 2.55;
   const imageScale = roundTo(scaleFrom + (scaleTo - scaleFrom) * cameraT);
 
@@ -36,7 +36,7 @@ function getCameraStyles(progress, isMobile, viewportWidth) {
     ? viewportWidth * 0.68
     : Math.max(viewportWidth * 0.52, 580);
   const imageX = roundTo(panTo * cameraT, 100);
-  const imageYBase = isMobile ? -40 : -280;
+  const imageYBase = isPhone ? 72 : isMobile ? -40 : -280;
   const imageY = roundTo(imageYBase - 24 * cameraT, 100);
 
   const heroOpacity = 1 - smoothstep(mapRange(progress, 0.06, 0.36, 0, 1));
@@ -185,7 +185,7 @@ function ScrollScene({ heroHidden = false }) {
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-[2] hidden bg-[linear-gradient(90deg,rgba(5,5,5,0.95)_0%,rgba(5,5,5,0.72)_16%,rgba(5,5,5,0.10)_44%,rgba(5,5,5,0.20)_60%,rgba(5,5,5,0.58)_78%,rgba(5,5,5,0.92)_100%)] lg:block" />
-        <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(180deg,rgba(5,5,5,0.5)_0%,rgba(5,5,5,0.12)_32%,rgba(5,5,5,0.45)_62%,rgba(5,5,5,0.94)_100%)] lg:hidden" />
+        <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(180deg,rgba(5,5,5,0.55)_0%,rgba(5,5,5,0.08)_22%,rgba(5,5,5,0.05)_48%,rgba(5,5,5,0.55)_72%,rgba(5,5,5,0.96)_100%)] lg:hidden" />
 
         <div className="pointer-events-none absolute inset-0 z-[2] bg-[radial-gradient(circle_at_63%_18%,var(--color-glow-primary),transparent_18%),radial-gradient(circle_at_61%_50%,var(--color-glow-secondary),transparent_24%)]" />
 

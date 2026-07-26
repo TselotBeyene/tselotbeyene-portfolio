@@ -64,7 +64,7 @@ function AgentAvatar({ reducedMotion, speaking }) {
             <img
               src={portrait}
               alt="Tselot Beyene"
-              className="h-full w-full object-cover object-[center_18%]"
+              className="h-full w-full scale-[1.85] object-cover object-[center_46%]"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)]/35 to-transparent" />
           </motion.div>

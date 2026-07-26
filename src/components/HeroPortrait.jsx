@@ -38,7 +38,7 @@ export default function HeroPortrait({
             alt="Portrait"
             // object-contain keeps the cutout natural; lighten drops near-black
             // pixels from the PNG into the page so the opaque image "box" disappears.
-            className="pointer-events-none h-full w-full select-none object-contain object-[center_20%] mix-blend-lighten lg:object-center"
+            className="pointer-events-none h-full w-full select-none object-contain object-[center_32%] mix-blend-lighten max-sm:object-[center_38%] lg:object-center"
             draggable={false}
           />
         </div>
